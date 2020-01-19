@@ -2,14 +2,14 @@
 #ifndef _UBPA_HEMESH_HEMESH_H_
 #define _UBPA_HEMESH_HEMESH_H_
 
-#include <HEMesh/THalfEdge.h>
-#include <HEMesh/TVertex.h>
-#include <HEMesh/TEdge.h>
-#include <HEMesh/TPolygon.h>
+#include "THalfEdge.h"
+#include "TVertex.h"
+#include "TEdge.h"
+#include "TPolygon.h"
 
-#include <HEMesh/random_set.h>
-#include <HEMesh/vec_pool.h>
-#include <HEMesh/HEMesh_ptr.h>
+#include "random_set.h"
+#include "vec_pool.h"
+#include "HEMesh_ptr.h"
 
 #include <set>
 #include <string>
@@ -214,6 +214,6 @@ namespace Ubpa {
 	};
 }
 
-#include<HEMesh/HEMesh.inl>
+#include"HEMesh.inl"
 
 #endif // !_UBPA_HEMESH_HEMESH_H_

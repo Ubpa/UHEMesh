@@ -2,7 +2,7 @@
 #ifndef _UBPA_HEMESH_THALFEDGE_H_
 #define _UBPA_HEMESH_THALFEDGE_H_
 
-#include <HEMesh/ForwardDecl.h>
+#include "ForwardDecl.h"
 
 namespace Ubpa {
 	template<typename V, typename E, typename P>
@@ -84,6 +84,6 @@ namespace Ubpa {
 	};
 }
 
-#include <HEMesh/THalfEdge.inl>
+#include "THalfEdge.inl"
 
 #endif // !_UBPA_HEMESH_THALFEDGE_H_

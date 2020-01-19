@@ -8,16 +8,16 @@ using namespace std;
 class V;
 class E;
 class P;
-class V : public TVertex<V,E,P> {
+class V : public TVertex<V, E, P> {
 public:
-	V(const string & name = "NO_NAME") : name(name){}
+	V(const string& name = "NO_NAME") : name(name) {}
 	~V() { printf("%s dead\n", name.c_str()); }
 public:
 	string name;
 };
 class E : public TEdge<V, E, P> {
 public:
-	E(const string& pre = "E") : pre(pre){}
+	E(const string& pre = "E") : pre(pre) {}
 	~E() { printf("%s dead\n", pre.c_str()); }
 public:
 	const string Name() const { return "[" + pre + "]" + HalfEdge()->Origin()->name + "-" + HalfEdge()->End()->name; }
@@ -43,12 +43,12 @@ private:
 	string pre;
 };
 
-ostream & operator<< (ostream & os, V::Ptr v) {
+ostream& operator<< (ostream& os, V::Ptr v) {
 	os << v->name;
 	return os;
 }
 
-ostream & operator<< (ostream & os, HEMesh<V>::ptrHE he) {
+ostream& operator<< (ostream& os, HEMesh<V>::ptrHE he) {
 	os << he->Origin() << "->" << he->End();
 	return os;
 }
@@ -57,7 +57,7 @@ void Print(shared_ptr<HEMesh<V>> mesh) {
 	cout << (mesh->IsValid() ? "[valid]" : "[not valid]") << endl;
 	cout << " V:" << mesh->Vertices().size() << endl;
 	for (auto v : mesh->Vertices())
-		cout << "    "<< v->name << endl;
+		cout << "    " << v->name << endl;
 
 	cout << "HE:" << mesh->HalfEdges().size() << endl;
 	for (auto he : mesh->HalfEdges())
@@ -88,7 +88,7 @@ int main() {
 			<< "------------------" << endl
 			<< "    test basic    " << endl
 			<< "------------------" << endl;
-		
+
 		auto mesh = make_shared<HEMesh<V>>();
 		cout << "add v0, v1, v2" << endl;
 
@@ -120,7 +120,7 @@ int main() {
 		mesh->RemoveVertex(v0);
 		Print(mesh);
 	}
-	
+
 	// test spilt edge
 	{
 		cout
@@ -191,7 +191,7 @@ int main() {
 		mesh->FlipEdge(e02);
 		Print(mesh);
 	}
-	
+
 	// test collapse edge
 	{
 		cout
@@ -229,7 +229,7 @@ int main() {
 		v5->name = "v5";
 
 		Print(mesh);
-	
+
 		auto v6 = mesh->CollapseEdge(v4->EdgeWith(v5));
 		v6->name = "v6";
 

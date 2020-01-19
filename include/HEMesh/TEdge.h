@@ -2,7 +2,7 @@
 #ifndef _UBPA_HEMESH_TEDGE_H_
 #define _UBPA_HEMESH_TEDGE_H_
 
-#include <HEMesh/ForwardDecl.h>
+#include "ForwardDecl.h"
 
 namespace Ubpa {
 	template<typename V, typename E, typename P = EmptyP<V, E>>
@@ -43,6 +43,6 @@ namespace Ubpa {
 	};
 }
 
-#include <HEMesh/TEdge.inl>
+#include "TEdge.inl"
 
 #endif // !_UBPA_HEMESH_TEDGE_H_
