@@ -17,11 +17,12 @@ namespace Ubpa {
 
 	template<typename V, typename E, typename P>
 	void THalfEdge<V, E, P>::Init(ptr<HE> next, ptr<HE> pair, ptr<V> v, ptr<E> e, ptr<P> p) {
-		this->next = next;
-		this->pair = pair;
-		this->origin = v;
-		this->edge = e;
-		this->polygon = p;
+		assert(next != nullptr && pair != nullptr && v != nullptr && e != nullptr);
+		this->next = next.idx;
+		this->pair = pair.idx;
+		origin = v.idx;
+		edge = e.idx;
+		polygon = p.idx;
 	}
 
 	template<typename V, typename E, typename P>
@@ -78,15 +79,6 @@ namespace Ubpa {
 			he = he->RotateNext();
 		} while (he != end);
 		return hes;
-	}
-
-	template<typename V, typename E, typename P>
-	void THalfEdge<V, E, P>::Clear() {
-		next = nullptr;
-		pair = nullptr;
-		origin = nullptr;
-		edge = nullptr;
-		polygon = nullptr;
 	}
 }
 

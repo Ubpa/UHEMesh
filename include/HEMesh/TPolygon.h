@@ -21,10 +21,10 @@ namespace Ubpa {
 		using PtrC = ptrc<P>;
 
 	public:
-		const ptr<HE> HalfEdge() { return halfEdge; }
+		const ptr<HE> HalfEdge() { return ptr<HE>(halfEdge, mesh); }
 		const ptrc<HE> HalfEdge() const { return const_cast<TPolygon*>(this)->HalfEdge(); }
 
-		void SetHalfEdge(ptr<HE> he) { halfEdge = he; }
+		void SetHalfEdge(ptr<HE> he) { assert(he.mesh == nullptr || mesh == he.mesh); halfEdge = he.idx; }
 
 		static bool IsBoundary(ptr<P> p) { return p == nullptr; }
 		size_t Degree() const { return static_cast<int>(const_cast<TPolygon*>(this)->BoundaryHEs().size()); }
@@ -33,10 +33,11 @@ namespace Ubpa {
 		const std::vector<ptr<E>> BoundaryEdges();
 		const std::vector<ptr<V>> BoundaryVertice();
 
-		void Clear() { halfEdge = nullptr; }
-
 	private:
-		ptr<HE> halfEdge;
+		friend class HEMesh<V>;
+		HEMesh<V>* mesh = nullptr;
+
+		int halfEdge = -1;
 	};
 
 }

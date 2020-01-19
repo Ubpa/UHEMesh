@@ -155,7 +155,8 @@ namespace Ubpa {
 		template<typename T, typename ... Args>
 		const ptr<T> New(Args&& ... args) {
 			auto idx = traits<T>::pool(this).request(std::forward<Args>(args)...);
-			auto p = ptr<T>(this, static_cast<int>(idx));
+			traits<T>::pool(this)[idx].mesh = this;
+			auto p = ptr<T>(static_cast<int>(idx), this);
 			traits<T>::set(this).insert(p);
 			return p;
 		}
@@ -167,7 +168,7 @@ namespace Ubpa {
 			traits<T>::set(this).erase(elem);
 		}
 
-		template<typename T, typename HEMesh_t>
+		template<typename, typename>
 		friend class HEMesh_ptr; // use Get
 		template<typename T>
 		T* const Get(int idx) {

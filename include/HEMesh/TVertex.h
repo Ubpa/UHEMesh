@@ -29,12 +29,12 @@ namespace Ubpa {
 			using _P = P;
 
 		public:
-			const ptr<HE> HalfEdge() { return halfEdge; }
+			const ptr<HE> HalfEdge() { return ptr<HE>(halfEdge, mesh); }
 			const ptrc<HE> HalfEdge() const { return const_cast<TVertex*>(this)->HalfEdge(); }
 
-			void SetHalfEdge(ptr<HE> he) { halfEdge = he; }
+			void SetHalfEdge(ptr<HE> he) { assert(he.mesh == nullptr || mesh == he.mesh); halfEdge = he.idx; }
 
-			bool IsIsolated() const { return halfEdge == nullptr; }
+			bool IsIsolated() const { return halfEdge == -1; }
 			bool IsBoundary() const;
 			size_t Degree() const { return OutHEs().size(); }
 
@@ -59,10 +59,10 @@ namespace Ubpa {
 			bool IsConnectedWith(ptr<V> v) const { return const_cast<TVertex*>(this)->EdgeWith(v); }
 			static bool IsConnected(ptr<V> v0, ptr<V> v1) { return v0->IsConnectedWith(v1); }
 
-			void Clear() { halfEdge = nullptr; }
-
 		private:
-			ptr<HE> halfEdge;
+			HEMesh<V>* mesh = nullptr;
+
+			int halfEdge = -1;
 	};
 }
 

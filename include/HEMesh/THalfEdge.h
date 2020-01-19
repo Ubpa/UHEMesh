@@ -21,12 +21,12 @@ namespace Ubpa {
 		using PtrC = ptrc<HE>;
 
 	public:
-		const ptr<HE> Next() { return next; }
-		const ptr<HE> Pair() { return pair; }
-		const ptr<V> Origin() { return origin; }
-		const ptr<E> Edge() { return edge; }
-		const ptr<P> Polygon() { return polygon; }
-		const ptr<V> End() { return pair->Origin(); }
+		const ptr<HE> Next() { return ptr<HE>(next, mesh); }
+		const ptr<HE> Pair() { return ptr<HE>(pair, mesh); }
+		const ptr<V> Origin() { return ptr<V>(origin, mesh); }
+		const ptr<E> Edge() { return ptr<E>(edge, mesh); }
+		const ptr<P> Polygon() { return ptr<P>(polygon, mesh); }
+		const ptr<V> End() { return Pair()->Origin(); }
 		const ptr<HE> Pre();
 		const ptr<HE> RotateNext() { return Pair()->Next(); }
 		const ptr<HE> RotatePre() { return Pre()->Pair(); }
@@ -41,15 +41,15 @@ namespace Ubpa {
 		const ptrc<HE> RotateNext() const { return const_cast<HE*>(this)->RotateNext(); }
 		const ptrc<HE> RotatePre() const { return const_cast<HE*>(this)->RotatePre(); }
 
-		void SetNext(ptr<HE> he) { next = he; }
-		void SetPair(ptr<HE> he) { pair = he; }
-		void SetOrigin(ptr<V> v) { origin = v; }
-		void SetEdge(ptr<E> e) { edge = e; }
-		void SetPolygon(ptr<P> p) { polygon = p; }
+		void SetNext(ptr<HE> he) { next = he.idx; }
+		void SetPair(ptr<HE> he) { pair = he.idx; }
+		void SetOrigin(ptr<V> v) { origin = v.idx; }
+		void SetEdge(ptr<E> e) { edge = e.idx; }
+		void SetPolygon(ptr<P> p) { polygon = p.idx; }
 		void Init(ptr<HE> next, ptr<HE> pair, ptr<V> v, ptr<E> e, ptr<P> p);
 
-		bool IsFree() const { return polygon == nullptr; }
-		bool IsBoundary() const { return polygon == nullptr; }
+		bool IsFree() const { return polygon == -1; }
+		bool IsBoundary() const { return polygon == -1; }
 
 		static const ptr<HE> FindFreeIncident(ptr<HE> begin, ptr<HE> end);
 
@@ -68,19 +68,20 @@ namespace Ubpa {
 		// RotateNextBetween(this, this), a loop from this to this
 		const std::vector<ptr<HE>> RotateNextLoop() { return RotateNextBetween(Self(), Self()); }
 
-		void Clear();
-
 	private:
 		const ptr<HE> Self() { return Pair()->Pair(); }
 		const ptrc<HE> Self() const { return const_cast<HE*>(this)->Self(); }
 
 	private:
-		ptr<HE> next;
-		ptr<HE> pair;
+		friend class HEMesh<V>;
+		HEMesh<V>* mesh = nullptr;
 
-		ptr<V> origin;
-		ptr<E> edge;
-		ptr<P> polygon;
+		int next = -1;
+		int pair = -1;
+
+		int origin = -1;
+		int edge = -1;
+		int polygon = -1;
 	};
 }
 
