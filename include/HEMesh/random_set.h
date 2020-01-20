@@ -10,18 +10,14 @@ namespace Ubpa {
 	class random_set {
 	public:
 		void insert(const T& e) {
-			auto target = Tmap.find(e);
-			if (target != Tmap.end())
-				return;
-
+			assert(Tmap.find(e) == Tmap.end());
 			Tmap[e] = Tvec.size();
 			Tvec.push_back(e);
 		}
 
 		void erase(const T& e) {
 			auto target = Tmap.find(e);
-			if (target == Tmap.end())
-				return;
+			assert(target != Tmap.end());
 			auto eIdx = target->second;
 			if (eIdx != Tvec.size() - 1) {
 				Tmap[Tvec.back()] = eIdx;
@@ -52,10 +48,8 @@ namespace Ubpa {
 		const std::vector<T>& vec() const { return Tvec; }
 
 		size_t idx(const T& e) const {
-			auto target = Tmap.find(e);
-			if (target == Tmap.end())
-				return -1;
-			return target->second;
+			assert(Tmap.find(e) != Tmap.end());
+			return Tmap.find(e)->second;
 		}
 
 		bool contains(const T& e) const { return Tmap.find(e) != Tmap.end(); }
