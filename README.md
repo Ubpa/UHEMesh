@@ -46,7 +46,7 @@ int main() {
 ## Tips
 
 - customed class `T` should have a constructor with default arguments, e.g. `T(argT0 arg0 = val0, ...)` 
-- you can get pointer type by `HEMesh<...>::ptrXX` or `XX::Ptr` 
+- you can get vertex, edge, polygon and halfedge type by `HEMesh<...>::V/E/P/HE` 
 - use `EmptyE<V, P>`、`EmptyP<V, E>`、`EmptyEP_E<V>`、`EmptyEP_P<V>` when you don't custom `Edge` or `Polygon` type
 - boundary polygon is `nullptr` or use `HEMesh<...>::P::IsBoundary(polygon)` to avoid literal value
 
