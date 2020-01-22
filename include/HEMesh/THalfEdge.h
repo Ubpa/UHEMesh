@@ -48,16 +48,23 @@ namespace Ubpa {
 
 		// [begin, end), if begin == end, return a loop
 		static const std::vector<HE*> NextBetween(HE* begin, HE* end);
-		// [begin, end), if begin == end, return a loop
-		static const std::vector<HE*> RotateNextBetween(HE* begin, HE* end);
+		static const std::vector<const HE*> NextBetween(const HE* begin, const HE* end) { return Const(NextBetween(const_cast<HE*>(begin), const_cast<HE*>(end))); }
 		// [this, end), NextBetween(this, end);
 		const std::vector<HE*> NextTo(HE* end) { return NextBetween(this, end); }
+		const std::vector<const HE*> NextTo(const HE* end) const { return NextBetween(this, end); }
+		// NextBetween(this, this), a loop from this to this
+		const std::vector<HE*> NextLoop() { return NextTo(this); }
+		const std::vector<const HE*> NextLoop() const { return NextTo(this); }
+
+		// [begin, end), if begin == end, return a loop
+		static const std::vector<HE*> RotateNextBetween(HE* begin, HE* end);
+		static const std::vector<const HE*> RotateNextBetween(const HE* begin, const HE* end) { return Const(RotateNextBetween(const_cast<HE*>(begin), const_cast<HE*>(end))); }
 		// [this, end), RotateNextBetween(this, end);
 		const std::vector<HE*> RotateNextTo(HE* end) { return RotateNextBetween(this, end); }
-		// NextBetween(this, this), a loop from this to this
-		const std::vector<HE*> NextLoop() { return NextBetween(this, this); }
+		const std::vector<const HE*> RotateNextTo(const HE* end) const { return RotateNextBetween(this, end);; }
 		// RotateNextBetween(this, this), a loop from this to this
-		const std::vector<HE*> RotateNextLoop() { return RotateNextBetween(this, this); }
+		const std::vector<HE*> RotateNextLoop() { return RotateNextTo(this); }
+		const std::vector<const HE*> RotateNextLoop() const { return RotateNextTo(this); }
 
 	private:
 		HE* next = nullptr;
