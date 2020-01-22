@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <set>
+#include <type_traits>
 
 #include <assert.h>
 
@@ -36,8 +37,10 @@ namespace Ubpa {
 
 	class AllEmpty;
 
-	template<typename T, typename HEMesh_t>
-	class HEMesh_ptr;
+	template<template<typename, typename ...> class ContainerT, typename ElemT, typename ... Args>
+	const ContainerT<const ElemT*> Const(const ContainerT<ElemT*, Args...>& container) {
+		return ContainerT<const ElemT*>(container.begin(), container.end());
+	}
 }
 
 #endif // !_UBPA_HEMESH_FORWARDDECL_H_

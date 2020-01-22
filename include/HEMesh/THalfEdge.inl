@@ -4,29 +4,28 @@
 
 namespace Ubpa {
 	template<typename V, typename E, typename P>
-	const HEMesh_ptr<THalfEdge<V, E, P>, HEMesh<V>> THalfEdge<V, E, P>::Pre() {
-		auto self = Self();
-		auto he = self;
+	THalfEdge<V, E, P>* const THalfEdge<V, E, P>::Pre() {
+		auto he = this;
 		auto next = he->Next();
 		do {
 			he = next;
 			next = he->Next();
-		} while (next != self);
+		} while (next != this);
 		return he;
 	}
 
 	template<typename V, typename E, typename P>
-	void THalfEdge<V, E, P>::Init(ptr<HE> next, ptr<HE> pair, ptr<V> v, ptr<E> e, ptr<P> p) {
+	void THalfEdge<V, E, P>::Init(HE* next, HE* pair, V* v, E* e, P* p) {
 		assert(next != nullptr && pair != nullptr && v != nullptr && e != nullptr);
-		this->next = next.idx;
-		this->pair = pair.idx;
-		origin = v.idx;
-		edge = e.idx;
-		polygon = p.idx;
+		this->next = next;
+		this->pair = pair;
+		origin = v;
+		edge = e;
+		polygon = p;
 	}
 
 	template<typename V, typename E, typename P>
-	const HEMesh_ptr<THalfEdge<V, E, P>, HEMesh<V>> THalfEdge<V, E, P>::FindFreeIncident(ptr<HE> begin, ptr<HE> end) {
+	THalfEdge<V, E, P>* const THalfEdge<V, E, P>::FindFreeIncident(HE* begin, HE* end) {
 		assert(begin->End() == end->End());
 
 		for (auto he = begin; he != end; he = he->Next()->Pair()) {
@@ -38,7 +37,7 @@ namespace Ubpa {
 	}
 
 	template<typename V, typename E, typename P>
-	bool THalfEdge<V, E, P>::MakeAdjacent(ptr<HE> inHE, ptr<HE> outHE) {
+	bool THalfEdge<V, E, P>::MakeAdjacent(HE* inHE, HE* outHE) {
 		assert(inHE->End() == outHE->Origin());
 
 		if (inHE->Next() == outHE)
@@ -60,8 +59,8 @@ namespace Ubpa {
 	}
 
 	template<typename V, typename E, typename P>
-	const std::vector<HEMesh_ptr<THalfEdge<V, E, P>, HEMesh<V>>> THalfEdge<V, E, P>::NextBetween(ptr<HE> begin, ptr<HE> end) {
-		std::vector<ptr<HE>> hes;
+	const std::vector<THalfEdge<V, E, P>*> THalfEdge<V, E, P>::NextBetween(HE* begin, HE* end) {
+		std::vector<HE*> hes;
 		auto he = begin;
 		do {
 			hes.push_back(he);
@@ -71,8 +70,8 @@ namespace Ubpa {
 	}
 
 	template<typename V, typename E, typename P>
-	const std::vector<HEMesh_ptr<THalfEdge<V, E, P>, HEMesh<V>>> THalfEdge<V, E, P>::RotateNextBetween(ptr<HE> begin, ptr<HE> end) {
-		std::vector<ptr<HE>> hes;
+	const std::vector<THalfEdge<V, E, P>*> THalfEdge<V, E, P>::RotateNextBetween(HE* begin, HE* end) {
+		std::vector<HE*> hes;
 		auto he = begin;
 		do {
 			hes.push_back(he);

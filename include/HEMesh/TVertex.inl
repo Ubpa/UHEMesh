@@ -20,23 +20,23 @@ namespace Ubpa {
 	}
 
 	template<typename V, typename E, typename P>
-	const std::vector<HEMesh_ptr<E, HEMesh<V>>> TVertex<V, E, P>::AdjEdges() {
-		std::vector<ptr<E>> edges;
+	const std::vector<E*> TVertex<V, E, P>::AdjEdges() {
+		std::vector<E*> edges;
 		for (auto he : OutHEs())
 			edges.push_back(he->Edge());
 		return edges;
 	}
 
 	template<typename V, typename E, typename P>
-	const std::vector<HEMesh_ptr<V, HEMesh<V>>> TVertex<V, E, P>::AdjVertices() {
-		std::vector<ptr<V>> adjVs;
+	const std::vector<V*> TVertex<V, E, P>::AdjVertices() {
+		std::vector<V*> adjVs;
 		for (auto he : OutHEs())
 			adjVs.push_back(he->End());
 		return adjVs;
 	}
 
 	template<typename V, typename E, typename P>
-	const HEMesh_ptr<THalfEdge<V, E, P>, HEMesh<V>> TVertex<V, E, P>::FindFreeIncident() {
+	THalfEdge<V,E,P>* const TVertex<V, E, P>::FindFreeIncident() {
 		if (IsIsolated())
 			return nullptr;
 
@@ -52,7 +52,7 @@ namespace Ubpa {
 	}
 
 	template<typename V, typename E, typename P>
-	const HEMesh_ptr<THalfEdge<V, E, P>, HEMesh<V>> TVertex<V, E, P>::HalfEdgeTo(ptr<V> end) {
+	THalfEdge<V, E, P>* const TVertex<V, E, P>::HalfEdgeTo(V* end) {
 		if (IsIsolated())
 			return nullptr;
 
@@ -68,7 +68,7 @@ namespace Ubpa {
 	}
 
 	template<typename V, typename E, typename P>
-	const HEMesh_ptr<E, HEMesh<V>> TVertex<V, E, P>::EdgeWith(ptr<V> v) {
+	E* const TVertex<V, E, P>::EdgeWith(V* v) {
 		auto he = HalfEdgeTo(v);
 		if (!he)
 			return nullptr;
