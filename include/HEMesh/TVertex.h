@@ -38,6 +38,9 @@ namespace Ubpa {
 			const std::vector<V*> AdjVertices();
 			const std::vector<const V*> AdjVertices() const { return Const(const_cast<TVertex*>(this)->AdjVertices()); }
 
+			const std::set<P*> AdjPolygons();
+			const std::set<const P*> AdjPolygons() const { return Const(const_cast<TVertex*>(this)->AdjPolygons()); }
+
 			HE* const FindFreeIncident();
 			HE* const FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
 

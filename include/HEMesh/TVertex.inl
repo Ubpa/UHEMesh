@@ -36,6 +36,14 @@ namespace Ubpa {
 	}
 
 	template<typename V, typename E, typename P>
+	const std::set<P*> TVertex<V, E, P>::AdjPolygons() {
+		std::set<P*> adjPs;
+		for (auto he : OutHEs())
+			adjPs.insert(he->Polygon());
+		return adjPs;
+	}
+
+	template<typename V, typename E, typename P>
 	THalfEdge<V,E,P>* const TVertex<V, E, P>::FindFreeIncident() {
 		if (IsIsolated())
 			return nullptr;
