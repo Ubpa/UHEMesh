@@ -13,7 +13,6 @@ namespace Ubpa {
 			using HE = THalfEdge<V, E, P>;
 
 		private:
-			// for _enable_HEMesh
 			friend class _enable_HEMesh<V>;
 			friend class HEMesh<V>;
 			using _E = E;
@@ -42,15 +41,21 @@ namespace Ubpa {
 			const std::set<const P*> AdjPolygons() const { return Const(const_cast<TVertex*>(this)->AdjPolygons()); }
 
 			HE* const FindFreeIncident();
-			HE* const FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
+			const HE* const FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
 
 			HE* const HalfEdgeTo(V* end);
+			const HE* const HalfEdgeTo(const V* end) const { return const_cast<TVertex*>(this)->HalfEdgeTo(const_cast<V*>(end)); }
+
 			static HE* const HalfEdgeAlong(V* origin, V* end) { return origin->HalfEdgeTo(end); }
+			static const HE* const HalfEdgeAlong(const V* origin, const V* end) { return HalfEdgeAlong(const_cast<V*>(origin), const_cast<V*>(end)); }
 
 			E* const EdgeWith(V* v);
-			static E* const EdgeBetween(V* v0, V* v1) { return v0->EdgeWith(v1); }
+			const E* const EdgeWith(const V* v) const { return const_cast<TVertex*>(this)->EdgeWith(const_cast<V*>(v)); }
 
-			bool IsConnectedWith(const V* v) const { return const_cast<TVertex*>(this)->EdgeWith(const_cast<V*>(v)); }
+			static E* const EdgeBetween(V* v0, V* v1) { return v0->EdgeWith(v1); }
+			static const E* const EdgeBetween(const V* v0, const V* v1) { return EdgeBetween(const_cast<V*>(v0), const_cast<V*>(v1)); }
+
+			bool IsConnectedWith(const V* v) const { return EdgeWith(v); }
 			static bool IsConnected(const V* v0, const V* v1) { return v0->IsConnectedWith(v1); }
 
 		private:

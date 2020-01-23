@@ -24,8 +24,13 @@ namespace Ubpa {
 		// + [he.RotateNext, he.RotateNext.RotateNext, ..., he)
 		// + [he.next, he.next.RotateNext, ..., he.pair)
 		const std::vector<HE*> OutHEs();
+		const std::vector<const HE*> AdjOutHEs() const { return Const(const_cast<TEdge*>(this)->AdjOutHEs()); }
+
 		const std::set<V*> AdjVertices();
+		const std::set<const V*> AdjVertices() const { return Const(const_cast<TEdge*>(this)->AdjVertices()); }
+
 		const std::vector<E*> AdjEdges();
+		const std::vector<const E*> AdjEdges() const { return Const(const_cast<TEdge*>(this)->AdjEdges()); }
 
 	private:
 		HE* halfEdge = nullptr;
