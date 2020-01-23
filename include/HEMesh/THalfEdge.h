@@ -17,7 +17,7 @@ namespace Ubpa {
 		V* const Origin() { return origin; }
 		E* const Edge() { return edge; }
 		P* const Polygon() { return polygon; }
-		V* const End() { return Pair()->Origin(); }
+		V* const End() { return Next()->Origin(); }
 		HE* const Pre();
 		HE* const RotateNext() { return Pair()->Next(); }
 		HE* const RotatePre() { return Pre()->Pair(); }
