@@ -208,7 +208,7 @@ namespace Ubpa {
 			New<V>();
 
 		for (auto polygon : polygons) {
-			vector<HE*> heLoop;
+			std::vector<HE*> heLoop;
 			for (size_t i = 0; i < polygon.size(); i++) {
 				size_t next = (i + 1) % polygon.size();
 				if (polygon[i] == polygon[next]) {
@@ -226,9 +226,9 @@ namespace Ubpa {
 			auto p = AddPolygon(heLoop);
 
 			if (p == nullptr) {
-				string polygonStr;
+				std::string polygonStr;
 				for (auto idx : polygon)
-					polygonStr += to_string(idx) + ", ";
+					polygonStr += std::to_string(idx) + ", ";
 				printf("WARNNING::HEMesh::Init\n"
 					"\t""AddPolygon fail (%s)\n", polygonStr.c_str());
 			}
@@ -241,7 +241,7 @@ namespace Ubpa {
 	bool HEMesh<V>::Init(const std::vector<size_t>& polygons, size_t sides) {
 		if (polygons.size() % sides != 0) {
 			printf("ERROR::HEMesh::Init:\n"
-				"\t""polygons.size() isn't an integer multiple of sides\n")
+				"\t""polygons.size() isn't an integer multiple of sides\n");
 		}
 		std::vector<std::vector<size_t>> arrangedPolygons;
 		for (size_t i = 0; i < polygons.size(); i += sides) {

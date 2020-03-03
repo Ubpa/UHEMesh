@@ -1,0 +1,3 @@
+[submodule "external/UCMake"]
+	path = external/UCMake
+	url = https://github.com/Ubpa/UCMake
