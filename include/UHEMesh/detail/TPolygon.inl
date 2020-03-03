@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _UBPA_HEMESH_TPOLYGON_INL_
-#define _UBPA_HEMESH_TPOLYGON_INL_
 
 namespace Ubpa {
 	template<typename V, typename E, typename P>
@@ -19,5 +17,3 @@ namespace Ubpa {
 		return vertices;
 	}
 }
-
-#endif// !_UBPA_HEMESH_TPOLYGON_INL_

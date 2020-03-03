@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _UBPA_HEMESH_TEDGE_INL_
-#define _UBPA_HEMESH_TEDGE_INL_
 
 namespace Ubpa {
 	template<typename V, typename E, typename P>
@@ -30,5 +28,3 @@ namespace Ubpa {
 		return edges;
 	}
 }
-
-#endif // !_UBPA_HEMESH_TEDGE_INL_

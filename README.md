@@ -1,4 +1,4 @@
-# HEMesh
+# UHEMesh
 
 an elegant, high-performance, user-friendly halfedge data structure
 
@@ -13,7 +13,7 @@ an elegant, high-performance, user-friendly halfedge data structure
 ### default Vertex, Edge and Polygon class
 
 ```c++
-#include <HEMesh/HEMesh.h>
+#include <UHEMesh/HEMesh.h>
 #include <vector>
 int main() {
     std::vector<size_t> indices = {0,1,2,0,2,3};
@@ -25,7 +25,7 @@ int main() {
 ### custom Vertex, Edge and Polygon class
 
 ```c++
-#include <HEMesh/HEMesh.h>
+#include <UHEMesh/HEMesh.h>
 #include <vector>
 using namespace Ubpa;
 // forward declaration

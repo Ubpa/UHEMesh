@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _UBPA_HEMESH_TEDGE_H_
-#define _UBPA_HEMESH_TEDGE_H_
 
 #include "detail/ForwardDecl.h"
 
@@ -38,5 +36,3 @@ namespace Ubpa {
 }
 
 #include "detail/TEdge.inl"
-
-#endif // !_UBPA_HEMESH_TEDGE_H_

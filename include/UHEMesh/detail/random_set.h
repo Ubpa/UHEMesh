@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _UBPA_HEADER_RANDOM_SET_H_
-#define _UBPA_HEADER_RANDOM_SET_H_
 
 #include <vector>
 #include <unordered_map>
@@ -60,5 +58,3 @@ namespace Ubpa {
 		std::vector<T> Tvec;
 	};
 }
-
-#endif // !_UBPA_HEADER_RANDOM_SET_H_

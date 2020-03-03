@@ -1,12 +1,10 @@
 #pragma once
-#ifndef _UBPA_HEMESH_FORWARDDECL_H_
-#define _UBPA_HEMESH_FORWARDDECL_H_
 
 #include <vector>
 #include <set>
 #include <type_traits>
 
-#include <assert.h>
+#include <cassert>
 
 namespace Ubpa {
 	template<typename V, typename E, typename P>
@@ -42,5 +40,3 @@ namespace Ubpa {
 		return ContainerT<const ElemT*>(container.begin(), container.end());
 	}
 }
-
-#endif // !_UBPA_HEMESH_FORWARDDECL_H_

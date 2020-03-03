@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _BASIC_HEADER_VECPOOL_H_
-#define _BASIC_HEADER_VECPOOL_H_
 
 #include <vector>
 #include <array>
@@ -61,5 +59,3 @@ namespace Ubpa {
 		std::vector<T*> freeAdresses;
 	};
 }
-
-#endif // !_BASIC_HEADER_VECPOOL_H_

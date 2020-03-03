@@ -1,60 +1,23 @@
 #pragma once
-#ifndef _UBPA_HEMESH_HEMESH_H_
-#define _UBPA_HEMESH_HEMESH_H_
 
-#include "THalfEdge.h"
-#include "TVertex.h"
-#include "TEdge.h"
-#include "TPolygon.h"
+#include "Empty.h"
 
 #include "detail/random_set.h"
 #include "detail/pool.h"
 
-#include <set>
-#include <string>
-#include <algorithm>
-#include <iterator>
-#include <unordered_map>
-
-#include <assert.h>
-
 namespace Ubpa {
-	template <typename E, typename P>
-	class EmptyV : public TVertex<EmptyV<E, P>, E, P> {};
-	template <typename V, typename E>
-	class EmptyP : public TPolygon<V, E, EmptyP<V, E>> {};
-	template <typename V, typename P>
-	class EmptyE : public TEdge<V, EmptyE<V, P>, P> {};
-
-	template <typename V>
-	class EmptyEP_E : public TEdge<V, EmptyEP_E<V>, EmptyEP_P<V>> {};
-	template <typename V>
-	class EmptyEP_P : public TPolygon<V, EmptyEP_E<V>, EmptyEP_P<V>> {};
-
-	class AllEmpty : public TVertex<AllEmpty, EmptyEP_E<AllEmpty>, EmptyEP_P<AllEmpty>> {};
-
-	template<typename V>
-	class _enable_HEMesh {
-	private:
-		using E = typename V::_E;
-		using P = typename V::_P;
-	public:
-		template<typename = std::enable_if_t<std::is_base_of_v<TVertex<V, E, P>, V>>,
-			typename = std::enable_if_t<std::is_base_of_v<TEdge<V, E, P>, E>>,
-			typename = std::enable_if_t<std::is_base_of_v<TPolygon<V, E, P>, P>> >
-			class type {};
-	};
-	template<typename V>
-	using _enable_HEMesh_t = typename _enable_HEMesh<V>::template type<>;
-
 	// nullptr Polygon is a boundary
-	template<typename _V = AllEmpty>
-	class HEMesh : private _enable_HEMesh_t<_V> {
+	template<typename Vertex = AllEmpty>
+	class HEMesh {
 	public:
-		using V = _V;
+		using V = Vertex;
 		using E = typename V::_E;
 		using P = typename V::_P;
 		using HE = THalfEdge<V, E, P>;
+
+		static_assert(std::is_base_of_v<TVertex<V, E, P>, V>);
+		static_assert(std::is_base_of_v<TEdge<V, E, P>, E>);
+		static_assert(std::is_base_of_v<TPolygon<V, E, P>, P >);
 
 	public:
 		HEMesh() = default;
@@ -74,6 +37,7 @@ namespace Ubpa {
 		size_t NumHalfEdges() const { return halfEdges.size(); }
 		size_t NumBoundaries() const { return const_cast<HEMesh*>(this)->Boundaries().size(); }
 
+		// index is useless after changing the topology
 		size_t Index(V* v) const { return vertices.idx(v); }
 		size_t Index(E* e) const { return edges.idx(e); }
 		size_t Index(P* p) const { return polygons.idx(p); }
@@ -139,21 +103,16 @@ namespace Ubpa {
 		V* const CollapseEdge(E* e, Args&& ... args);
 
 	private:
+		template<typename T> struct traits;
+		template<typename T>
+		friend struct traits;
 		// new and insert
 		template<typename T, typename ... Args>
-		T * const New(Args&& ... args) {
-			T* elem = traits<T>::pool(this).request();
-			new (elem) T(std::forward<Args>(args)...);
-			traits<T>::set(this).insert(elem);
-			return elem;
-		}
+		T* const New(Args&& ... args);
 
 		// clear and erase
 		template<typename T>
-		void Delete(T * elem) {
-			traits<T>::pool(this).recycle(elem);
-			traits<T>::set(this).erase(elem);
-		}
+		void Delete(T* elem);
 
 	private:
 		random_set<HE*> halfEdges;
@@ -166,12 +125,9 @@ namespace Ubpa {
 		pool<E> poolE;
 		pool<P> poolP;
 
-		// ------------------------------
 
-		template<typename T>
-		struct traits;
-		template<typename T>
-		friend struct traits;
+	// =============================
+
 		template<>
 		struct traits<HE> {
 			static auto& pool(HEMesh* mesh) { return mesh->poolHE; }
@@ -196,5 +152,3 @@ namespace Ubpa {
 }
 
 #include "detail/HEMesh.inl"
-
-#endif // !_UBPA_HEMESH_HEMESH_H_

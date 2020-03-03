@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _UBPA_HEMESH_TPOLYGON_H_
-#define _UBPA_HEMESH_TPOLYGON_H_
 
 #include "detail/ForwardDecl.h"
 
@@ -36,5 +34,3 @@ namespace Ubpa {
 }
 
 #include "detail/TPolygon.inl"
-
-#endif // !_UBPA_HEMESH_TPOLYGON_H_

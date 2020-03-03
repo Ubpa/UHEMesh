@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _UBPA_HEMESH_THALFEDGE_H_
-#define _UBPA_HEMESH_THALFEDGE_H_
 
 #include "detail/ForwardDecl.h"
 
@@ -82,5 +80,3 @@ namespace Ubpa {
 }
 
 #include "detail/THalfEdge.inl"
-
-#endif // !_UBPA_HEMESH_THALFEDGE_H_

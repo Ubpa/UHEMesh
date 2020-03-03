@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _UBPA_HEMESH_THALFEDGE_INL_
-#define _UBPA_HEMESH_THALFEDGE_INL_
 
 namespace Ubpa {
 	template<typename V, typename E, typename P>
@@ -80,5 +78,3 @@ namespace Ubpa {
 		return hes;
 	}
 }
-
-#endif // !_UBPA_HEMESH_THALFEDGE_INL_

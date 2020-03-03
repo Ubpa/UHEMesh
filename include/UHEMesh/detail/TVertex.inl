@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _UBPA_HEMESH_TVERTEX_INL_
-#define _UBPA_HEMESH_TVERTEX_INL_
 
 namespace Ubpa {
 	template<typename V, typename E, typename P>
@@ -84,5 +82,3 @@ namespace Ubpa {
 		return he->Edge();
 	}
 }
-
-#endif// !_UBPA_HEMESH_TVERTEX_INL_
