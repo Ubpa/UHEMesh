@@ -7,8 +7,8 @@
 #include "TEdge.h"
 #include "TPolygon.h"
 
-#include "random_set.h"
-#include "pool.h"
+#include "detail/random_set.h"
+#include "detail/pool.h"
 
 #include <set>
 #include <string>
@@ -195,6 +195,6 @@ namespace Ubpa {
 	};
 }
 
-#include"HEMesh.inl"
+#include "detail/HEMesh.inl"
 
 #endif // !_UBPA_HEMESH_HEMESH_H_

@@ -2,7 +2,7 @@
 #ifndef _UBPA_HEMESH_TPOLYGON_H_
 #define _UBPA_HEMESH_TPOLYGON_H_
 
-#include "ForwardDecl.h"
+#include "detail/ForwardDecl.h"
 
 namespace Ubpa {
 	template<typename V, typename E, typename P>
@@ -35,6 +35,6 @@ namespace Ubpa {
 
 }
 
-#include "TPolygon.inl"
+#include "detail/TPolygon.inl"
 
 #endif // !_UBPA_HEMESH_TPOLYGON_H_

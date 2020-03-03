@@ -2,7 +2,7 @@
 #ifndef _UBPA_HEMESH_TVERTEX_H_
 #define _UBPA_HEMESH_TVERTEX_H_
 
-#include "ForwardDecl.h"
+#include "detail/ForwardDecl.h"
 
 namespace Ubpa {
 	template<typename V, typename E = EmptyEP_E<V>,
@@ -63,6 +63,6 @@ namespace Ubpa {
 	};
 }
 
-#include "TVertex.inl"
+#include "detail/TVertex.inl"
 
 #endif // !_UBPA_HEMESH_TVERTEX_H_
