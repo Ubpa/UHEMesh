@@ -96,7 +96,7 @@ namespace Ubpa {
 
 		// delete e
 		template<typename ...Args>
-		V* const SpiltEdge(E* e, Args&& ... args);
+		V* const SplitEdge(E* e, Args&& ... args);
 
 		// won't collapse in unsafe situation, return nullptr
 		template<typename ...Args>

@@ -661,12 +661,12 @@ namespace Ubpa {
 
 	template<typename V>
 	template<typename ...Args>
-	typename HEMesh<V>::V* const HEMesh<V>::SpiltEdge(E* e, Args&& ... args) {
+	typename HEMesh<V>::V* const HEMesh<V>::SplitEdge(E* e, Args&& ... args) {
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
 
 		if (he01->IsBoundary() && he10->IsBoundary()) {
-			printf("ERROR::HEMesh::SpiltEdge:\n"
+			printf("ERROR::HEMesh::SplitEdge:\n"
 				"\t""two side of edge are boundaries\n");
 			return nullptr;
 		}
@@ -678,7 +678,7 @@ namespace Ubpa {
 			auto p01 = he01->Polygon();
 
 			if (p01->Degree() != 3) {
-				printf("ERROR::HEMesh::SpiltEdge:\n"
+				printf("ERROR::HEMesh::SplitEdge:\n"
 					"\t""polygon's degree %zd is not 3\n", p01->Degree());
 				return nullptr;
 			}
@@ -745,7 +745,7 @@ namespace Ubpa {
 
 		if (p01->Degree() != 3 || p10->Degree() != 3)
 		{
-			printf("ERROR::HEMesh::SpiltEdge:\n"
+			printf("ERROR::HEMesh::SplitEdge:\n"
 				"\t""polygon's degree (%zd, %zd) is not 3\n",
 				p01->Degree(), p10->Degree());
 			return nullptr;
