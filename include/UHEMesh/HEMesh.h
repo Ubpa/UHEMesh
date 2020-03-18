@@ -29,6 +29,11 @@ namespace Ubpa {
 		const std::vector<HE*>& HalfEdges() { return halfEdges.vec(); }
 		const std::vector<E*>& Edges() { return edges.vec(); }
 		const std::vector<P*>& Polygons() { return polygons.vec(); }
+		/*
+		* ordered boundary == std::vector<HE*>
+		* boundaries == std::vector<ordered boundary>
+		* there maybe several boundaries in a mesh
+		*/
 		const std::vector<std::vector<HE*>> Boundaries();
 
 		size_t NumVertices() const { return vertices.size(); }

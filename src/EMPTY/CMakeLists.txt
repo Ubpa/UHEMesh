@@ -3,4 +3,4 @@ Ubpa_GlobGroupSrcs(RST sources PATHS
 	"${PROJECT_SOURCE_DIR}/include/UHEMesh"
 )
 
-Ubpa_AddTarget(MODE "EXE" SOURCES ${sources})
+Ubpa_AddTarget(MODE "EXE" SOURCES ${sources} TEST ON LIBS Ubpa::UHEMesh_core)
