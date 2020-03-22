@@ -1,1 +1,1 @@
-Ubpa_AddTarget(MODE "HEAD" SOURCES "include")
+Ubpa_AddTarget(MODE "HEAD" INTERFACE_INC ON)
