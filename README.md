@@ -1,5 +1,11 @@
 # UHEMesh
 
+> **U**bpa **H**alf-**E**dge **Mesh** 
+
+⭐ Star us on GitHub — it helps!
+
+[![repo-size](https://img.shields.io/github/languages/code-size/Ubpa/UHEMesh?style=flat)](https://github.com/Ubpa/UHEMesh/archive/master.zip) [![tag](https://img.shields.io/github/v/tag/Ubpa/UHEMesh)](https://github.com/Ubpa/UHEMesh/tags) [![license](https://img.shields.io/github/license/Ubpa/UHEMesh)](LICENSE) 
+
 an elegant, high-performance, user-friendly halfedge data structure
 
 ## Feature
@@ -32,13 +38,14 @@ using namespace Ubpa;
 class V;
 class E;
 class P;
+using Traits_VEP = HEMeshTraits<V, E, P>;
 // custom vertex, edge and polygon class
-class V : public TVertex<V, E, P> { /*...*/ }
-class E : public TEdge<V, E, P> { /*...*/ }
-class P : public TPolygon<V, E, P> { /*...*/ }
+class V : public TVertex<Traits_VEP> { /*...*/ }
+class E : public TEdge<Traits_VEP> { /*...*/ }
+class P : public TPolygon<Traits_VEP> { /*...*/ }
 int main() {
     std::vector<size_t> indices = {0,1,2,0,2,3};
-    HEMesh<V> mesh(indices, 3);
+    HEMesh<Traits_VEP> mesh(indices, 3);
     // ...
 }
 ```

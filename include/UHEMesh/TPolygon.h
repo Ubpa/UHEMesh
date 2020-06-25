@@ -3,11 +3,14 @@
 #include "detail/ForwardDecl.h"
 
 namespace Ubpa {
-	template<typename V, typename E, typename P>
+	template<typename Traits>
 	class TPolygon {
-	private:
-		// internal use
-		using HE = THalfEdge<V, E, P>;
+		friend class HEMesh<Traits>;
+	public:
+		using V = HEMeshTriats_V<Traits>;
+		using E = HEMeshTriats_E<Traits>;
+		using P = HEMeshTriats_P<Traits>;
+		using HE = HEMeshTriats_HE<Traits>;
 
 	public:
 		HE* const HalfEdge() { return halfEdge; }

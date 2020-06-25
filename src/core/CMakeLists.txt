@@ -1,1 +1,5 @@
-Ubpa_AddTarget(MODE "HEAD" INTERFACE_INC ON)
+Ubpa_AddTarget(
+  MODE HEAD
+  INC
+    "include"
+)

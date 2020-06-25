@@ -3,21 +3,21 @@
 #include "Empty.h"
 
 #include "detail/random_set.h"
-#include "detail/pool.h"
+#include <UContainer/Pool.h>
 
 namespace Ubpa {
 	// nullptr Polygon is a boundary
-	template<typename Vertex = AllEmpty>
+	template<typename Traits = HEMeshTriats_EmptyVEP>
 	class HEMesh {
 	public:
-		using V = Vertex;
-		using E = typename V::_E;
-		using P = typename V::_P;
-		using HE = THalfEdge<V, E, P>;
+		using V = HEMeshTriats_V<Traits>;
+		using E = HEMeshTriats_E<Traits>;
+		using P = HEMeshTriats_P<Traits>;
+		using HE = HEMeshTriats_HE<Traits>;
 
-		static_assert(std::is_base_of_v<TVertex<V, E, P>, V>);
-		static_assert(std::is_base_of_v<TEdge<V, E, P>, E>);
-		static_assert(std::is_base_of_v<TPolygon<V, E, P>, P >);
+		static_assert(std::is_base_of_v<TVertex<Traits>, V>);
+		static_assert(std::is_base_of_v<TEdge<Traits>, E>);
+		static_assert(std::is_base_of_v<TPolygon<Traits>, P >);
 
 	public:
 		HEMesh() = default;
@@ -108,9 +108,9 @@ namespace Ubpa {
 		V* const CollapseEdge(E* e, Args&& ... args);
 
 	private:
-		template<typename T> struct traits;
+		template<typename T> struct MemVarOf;
 		template<typename T>
-		friend struct traits;
+		friend struct MemVarOf;
 		// new and insert
 		template<typename T, typename ... Args>
 		T* const New(Args&& ... args);
@@ -125,31 +125,30 @@ namespace Ubpa {
 		random_set<E*> edges;
 		random_set<P*> polygons;
 
-		pool<HE> poolHE;
-		pool<V> poolV;
-		pool<E> poolE;
-		pool<P> poolP;
+		Pool<HE> poolHE;
+		Pool<V> poolV;
+		Pool<E> poolE;
+		Pool<P> poolP;
 
-
-	// =============================
+		// =============================
 
 		template<>
-		struct traits<HE> {
+		struct MemVarOf<HE> {
 			static auto& pool(HEMesh* mesh) { return mesh->poolHE; }
 			static auto& set(HEMesh* mesh) { return mesh->halfEdges; }
 		};
 		template<>
-		struct traits<V> {
+		struct MemVarOf<V> {
 			static auto& pool(HEMesh* mesh) { return mesh->poolV; }
 			static auto& set(HEMesh* mesh) { return mesh->vertices; }
 		};
 		template<>
-		struct traits<E> {
+		struct MemVarOf<E> {
 			static auto& pool(HEMesh* mesh) { return mesh->poolE; }
 			static auto& set(HEMesh* mesh) { return mesh->edges; }
 		};
 		template<>
-		struct traits<P> {
+		struct MemVarOf<P> {
 			static auto& pool(HEMesh* mesh) { return mesh->poolP; }
 			static auto& set(HEMesh* mesh) { return mesh->polygons; }
 		};

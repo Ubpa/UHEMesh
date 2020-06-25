@@ -1,8 +1,8 @@
 #pragma once
 
 namespace Ubpa {
-	template<typename V, typename E, typename P>
-	bool TVertex<V, E, P>::IsBoundary() const {
+	template<typename Traits>
+	bool TVertex<Traits>::IsBoundary() const {
 		if (IsIsolated())
 			return true;
 
@@ -17,32 +17,32 @@ namespace Ubpa {
 		return false;
 	}
 
-	template<typename V, typename E, typename P>
-	const std::vector<E*> TVertex<V, E, P>::AdjEdges() {
+	template<typename Traits>
+	const std::vector<HEMeshTriats_E<Traits>*> TVertex<Traits>::AdjEdges() {
 		std::vector<E*> edges;
 		for (auto he : OutHEs())
 			edges.push_back(he->Edge());
 		return edges;
 	}
 
-	template<typename V, typename E, typename P>
-	const std::vector<V*> TVertex<V, E, P>::AdjVertices() {
+	template<typename Traits>
+	const std::vector<HEMeshTriats_V<Traits>*> TVertex<Traits>::AdjVertices() {
 		std::vector<V*> adjVs;
 		for (auto he : OutHEs())
 			adjVs.push_back(he->End());
 		return adjVs;
 	}
 
-	template<typename V, typename E, typename P>
-	const std::set<P*> TVertex<V, E, P>::AdjPolygons() {
+	template<typename Traits>
+	const std::set<HEMeshTriats_P<Traits>*> TVertex<Traits>::AdjPolygons() {
 		std::set<P*> adjPs;
 		for (auto he : OutHEs())
 			adjPs.insert(he->Polygon());
 		return adjPs;
 	}
 
-	template<typename V, typename E, typename P>
-	THalfEdge<V,E,P>* const TVertex<V, E, P>::FindFreeIncident() {
+	template<typename Traits>
+	HEMeshTriats_HE<Traits>* const TVertex<Traits>::FindFreeIncident() {
 		if (IsIsolated())
 			return nullptr;
 
@@ -57,8 +57,8 @@ namespace Ubpa {
 		return nullptr;
 	}
 
-	template<typename V, typename E, typename P>
-	THalfEdge<V, E, P>* const TVertex<V, E, P>::HalfEdgeTo(V* end) {
+	template<typename Traits>
+	HEMeshTriats_HE<Traits>* const TVertex<Traits>::HalfEdgeTo(V* end) {
 		if (IsIsolated())
 			return nullptr;
 
@@ -73,8 +73,8 @@ namespace Ubpa {
 		return nullptr;
 	}
 
-	template<typename V, typename E, typename P>
-	E* const TVertex<V, E, P>::EdgeWith(V* v) {
+	template<typename Traits>
+	HEMeshTriats_E<Traits>* const TVertex<Traits>::EdgeWith(V* v) {
 		auto he = HalfEdgeTo(v);
 		if (!he)
 			return nullptr;

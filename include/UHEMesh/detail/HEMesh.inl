@@ -7,34 +7,34 @@
 #include <unordered_map>
 
 namespace Ubpa {
-	template<typename V>
+	template<typename Traits>
 	template<typename T, typename ... Args>
-	T* const HEMesh<V>::New(Args&& ... args) {
-		T* elem = traits<T>::pool(this).request();
+	T* const HEMesh<Traits>::New(Args&& ... args) {
+		T* elem = MemVarOf<T>::pool(this).Request();
 		new (elem) T(std::forward<Args>(args)...);
-		traits<T>::set(this).insert(elem);
+		MemVarOf<T>::set(this).insert(elem);
 		return elem;
 	}
 
 	// clear and erase
-	template<typename V>
+	template<typename Traits>
 	template<typename T>
-	void HEMesh<V>::Delete(T* elem) {
-		traits<T>::pool(this).recycle(elem);
-		traits<T>::set(this).erase(elem);
+	void HEMesh<Traits>::Delete(T* elem) {
+		MemVarOf<T>::pool(this).Recycle(elem);
+		MemVarOf<T>::set(this).erase(elem);
 	}
 
-	template<typename V>
-	const std::vector<size_t> HEMesh<V>::Indices(P* p) const {
+	template<typename Traits>
+	const std::vector<size_t> HEMesh<Traits>::Indices(P* p) const {
 		std::vector<size_t> indices;
 		for (auto v : p->BoundaryVertice())
 			indices.push_back(Index(v));
 		return indices;
 	}
 
-	template<typename V>
+	template<typename Traits>
 	template<typename ...Args>
-	typename HEMesh<V>::E* const HEMesh<V>::AddEdge(V* v0, V* v1, Args&& ... args) {
+	typename HEMesh<Traits>::E* const HEMesh<Traits>::AddEdge(V* v0, V* v1, Args&& ... args) {
 		if (v0 == v1) {
 			printf("ERROR::HEMesh::AddEdge\n"
 				"\t""v0 == v1\n");
@@ -98,9 +98,9 @@ namespace Ubpa {
 		return e;
 	}
 
-	template<typename V>
+	template<typename Traits>
 	template<typename ...Args>
-	typename HEMesh<V>::P* const HEMesh<V>::AddPolygon(const std::vector<HE*> heLoop, Args&& ... args) {
+	typename HEMesh<Traits>::P* const HEMesh<Traits>::AddPolygon(const std::vector<HE*> heLoop, Args&& ... args) {
 		if (heLoop.size() == 0) {
 			printf("ERROR::HEMesh::AddPolygon:\n"
 				"\t""heLoop is empty\n");
@@ -140,16 +140,16 @@ namespace Ubpa {
 		return polygon;
 	}
 
-	template<typename V>
-	void HEMesh<V>::RemovePolygon(P* polygon) {
+	template<typename Traits>
+	void HEMesh<Traits>::RemovePolygon(P* polygon) {
 		assert(polygon != nullptr);
 		for (auto he : polygon->BoundaryHEs())
 			he->SetPolygon(nullptr);
 		Delete<P>(polygon);
 	}
 
-	template<typename V>
-	void HEMesh<V>::RemoveEdge(E* e) {
+	template<typename Traits>
+	void HEMesh<Traits>::RemoveEdge(E* e) {
 		assert(e != nullptr);
 		auto he0 = e->HalfEdge();
 		auto he1 = he0->Pair();
@@ -185,15 +185,15 @@ namespace Ubpa {
 		Delete<E>(e);
 	}
 
-	template<typename V>
-	void HEMesh<V>::RemoveVertex(V* v) {
+	template<typename Traits>
+	void HEMesh<Traits>::RemoveVertex(V* v) {
 		for (auto e : v->AdjEdges())
 			RemoveEdge(e);
 		Delete<V>(v);
 	}
 
-	template<typename V>
-	bool HEMesh<V>::Init(const std::vector<std::vector<size_t>>& polygons) {
+	template<typename Traits>
+	bool HEMesh<Traits>::Init(const std::vector<std::vector<size_t>>& polygons) {
 		Clear();
 
 		if (polygons.empty()) {
@@ -258,8 +258,8 @@ namespace Ubpa {
 		return true;
 	}
 
-	template<typename V>
-	bool HEMesh<V>::Init(const std::vector<size_t>& polygons, size_t sides) {
+	template<typename Traits>
+	bool HEMesh<Traits>::Init(const std::vector<size_t>& polygons, size_t sides) {
 		if (polygons.size() % sides != 0) {
 			printf("ERROR::HEMesh::Init:\n"
 				"\t""polygons.size() isn't an integer multiple of sides\n");
@@ -273,8 +273,8 @@ namespace Ubpa {
 		return Init(arrangedPolygons);
 	}
 
-	template<typename V>
-	const std::vector<std::vector<size_t>> HEMesh<V>::Export() const {
+	template<typename Traits>
+	const std::vector<std::vector<size_t>> HEMesh<Traits>::Export() const {
 		std::vector<std::vector<size_t>> arrangedPolygons;
 		if (!IsValid())
 			return arrangedPolygons;
@@ -286,16 +286,16 @@ namespace Ubpa {
 		return arrangedPolygons;
 	}
 
-	template<typename V>
-	void HEMesh<V>::Clear() {
+	template<typename Traits>
+	void HEMesh<Traits>::Clear() {
 		vertices.clear();
 		halfEdges.clear();
 		edges.clear();
 		polygons.clear();
 	}
 
-	template<typename V>
-	void HEMesh<V>::Reserve(size_t n) {
+	template<typename Traits>
+	void HEMesh<Traits>::Reserve(size_t n) {
 		vertices.reserve(n);
 		poolV.reserve(n);
 
@@ -309,8 +309,8 @@ namespace Ubpa {
 		poolP.reserve(2 * n);
 	}
 
-	template<typename V>
-	bool HEMesh<V>::HaveBoundary() const {
+	template<typename Traits>
+	bool HEMesh<Traits>::HaveBoundary() const {
 		for (auto he : halfEdges) {
 			if (he->IsBoundary())
 				return true;
@@ -318,8 +318,8 @@ namespace Ubpa {
 		return false;
 	}
 
-	template<typename V>
-	bool HEMesh<V>::HaveIsolatedVertices() const {
+	template<typename Traits>
+	bool HEMesh<Traits>::HaveIsolatedVertices() const {
 		for (auto v : vertices) {
 			if (v->IsIsolated())
 				return true;
@@ -327,8 +327,8 @@ namespace Ubpa {
 		return false;
 	}
 
-	template<typename V>
-	const std::vector<std::vector<typename HEMesh<V>::HE*>> HEMesh<V>::Boundaries() {
+	template<typename Traits>
+	const std::vector<std::vector<typename HEMesh<Traits>::HE*>> HEMesh<Traits>::Boundaries() {
 		std::vector<std::vector<HE*>> boundaries;
 		std::set<HE*> found;
 		for (auto he : halfEdges) {
@@ -345,8 +345,8 @@ namespace Ubpa {
 		return boundaries;
 	}
 
-	template<typename V>
-	bool HEMesh<V>::IsValid() const {
+	template<typename Traits>
+	bool HEMesh<Traits>::IsValid() const {
 		for (auto he : halfEdges) {
 			if (!he->Next() || !he->Pair() || !he->Origin() || !he->Edge())
 				return false;
@@ -398,8 +398,8 @@ namespace Ubpa {
 		return true;
 	}
 
-	template<typename V>
-	bool HEMesh<V>::IsTriMesh() const {
+	template<typename Traits>
+	bool HEMesh<Traits>::IsTriMesh() const {
 		for (auto poly : polygons) {
 			if (poly->Degree() != 3)
 				return false;
@@ -407,8 +407,8 @@ namespace Ubpa {
 		return IsValid();
 	}
 
-	template<typename V>
-	const typename HEMesh<V>::P* HEMesh<V>::EraseVertex(V* v) {
+	template<typename Traits>
+	const typename HEMesh<Traits>::P* HEMesh<Traits>::EraseVertex(V* v) {
 		if (v->IsBoundary()) {
 			RemoveVertex(v);
 			return nullptr;
@@ -428,9 +428,9 @@ namespace Ubpa {
 		return AddPolygon(he->NextLoop());
 	}
 
-	template<typename V>
+	template<typename Traits>
 	template<typename ...Args>
-	typename HEMesh<V>::V* const HEMesh<V>::AddEdgeVertex(E* e, Args&& ... args) {
+	typename HEMesh<Traits>::V* const HEMesh<Traits>::AddEdgeVertex(E* e, Args&& ... args) {
 		// prepare
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
@@ -534,9 +534,9 @@ namespace Ubpa {
 		return v2;
 	}
 
-	template<typename V>
+	template<typename Traits>
 	template<typename ...Args>
-	typename HEMesh<V>::E* const HEMesh<V>::ConnectVertex(HE* he0, HE* he1, Args&& ... args) {
+	typename HEMesh<Traits>::E* const HEMesh<Traits>::ConnectVertex(HE* he0, HE* he1, Args&& ... args) {
 		auto p = he0->Polygon();
 		if (p != he1->Polygon()) {
 			printf("ERROR::HEMesh::ConnectVertex:\n"
@@ -600,8 +600,8 @@ namespace Ubpa {
 		return e01;
 	}
 
-	template<typename V>
-	bool HEMesh<V>::FlipEdge(E* e) {
+	template<typename Traits>
+	bool HEMesh<Traits>::FlipEdge(E* e) {
 		if (e->IsBoundary()) {
 			printf("ERROR::HEMesh::FlipEdge:\n"
 				"\t""e is boundary\n");
@@ -659,9 +659,9 @@ namespace Ubpa {
 		return true;
 	}
 
-	template<typename V>
+	template<typename Traits>
 	template<typename ...Args>
-	typename HEMesh<V>::V* const HEMesh<V>::SplitEdge(E* e, Args&& ... args) {
+	typename HEMesh<Traits>::V* const HEMesh<Traits>::SplitEdge(E* e, Args&& ... args) {
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
 
@@ -823,9 +823,9 @@ namespace Ubpa {
 		return v4;
 	}
 
-	template<typename V>
+	template<typename Traits>
 	template<typename ... Args>
-	typename HEMesh<V>::V* const HEMesh<V>::CollapseEdge(E* e, Args&& ...args) {
+	typename HEMesh<Traits>::V* const HEMesh<Traits>::CollapseEdge(E* e, Args&& ...args) {
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
 
