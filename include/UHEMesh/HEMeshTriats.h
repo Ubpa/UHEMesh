@@ -20,6 +20,12 @@ namespace Ubpa {
 		using P = P_;
 		using HE = THalfEdge<HEMeshTriats>;
 		using Mesh = HEMesh<HEMeshTriats>;
+
+		static constexpr bool IsValid() noexcept {
+			return std::is_base_of_v<TVertex<HEMeshTriats>, V>
+				&& std::is_base_of_v<TEdge<HEMeshTriats>, E>
+				&& std::is_base_of_v<TPolygon<HEMeshTriats>, P>;
+		}
 	};
 
 	template<typename Traits>

@@ -15,9 +15,7 @@ namespace Ubpa {
 		using P = HEMeshTriats_P<Traits>;
 		using HE = HEMeshTriats_HE<Traits>;
 
-		static_assert(std::is_base_of_v<TVertex<Traits>, V>);
-		static_assert(std::is_base_of_v<TEdge<Traits>, E>);
-		static_assert(std::is_base_of_v<TPolygon<Traits>, P >);
+		static_assert(Traits::IsValid());
 
 	public:
 		HEMesh() = default;
