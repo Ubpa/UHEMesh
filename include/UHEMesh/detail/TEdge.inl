@@ -2,8 +2,8 @@
 
 namespace Ubpa {
 	template<typename Traits>
-	const std::vector<HEMeshTriats_HE<Traits>*> TEdge<Traits>::OutHEs() {
-		std::vector<THalfEdge<Traits>*> hes;
+	const std::vector<HEMeshTriats_H<Traits>*> TEdge<Traits>::OutHalfEdges() {
+		std::vector<H*> hes;
 		auto he01 = HalfEdge(); // v0 => v1
 		for (auto he = he01->RotateNext(); he != he01; he = he->RotateNext())
 			hes.push_back(he);
@@ -15,7 +15,7 @@ namespace Ubpa {
 	template<typename Traits>
 	const std::set<HEMeshTriats_V<Traits>*> TEdge<Traits>::AdjVertices() {
 		std::set<V*> vertices;
-		for (auto e : OutHEs())
+		for (auto e : OutHalfEdges())
 			vertices.insert(e->End());
 		return vertices;
 	}
@@ -23,7 +23,7 @@ namespace Ubpa {
 	template<typename Traits>
 	const std::vector<HEMeshTriats_E<Traits>*> TEdge<Traits>::AdjEdges() {
 		std::vector<E*> edges;
-		for (auto he : OutHEs())
+		for (auto he : OutHalfEdges())
 			edges.push_back(he->Edge());
 		return edges;
 	}

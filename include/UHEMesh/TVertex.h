@@ -10,23 +10,23 @@ namespace Ubpa {
 		using V = HEMeshTriats_V<Traits>;
 		using E = HEMeshTriats_E<Traits>;
 		using P = HEMeshTriats_P<Traits>;
-		using HE = HEMeshTriats_HE<Traits>;
+		using H = HEMeshTriats_H<Traits>;
 
 	public:
-		HE* const HalfEdge() { return halfEdge; }
-		const HE* const HalfEdge() const { return const_cast<TVertex*>(this)->HalfEdge(); }
+		H* const HalfEdge() { return halfEdge; }
+		const H* const HalfEdge() const { return const_cast<TVertex*>(this)->HalfEdge(); }
 
-		void SetHalfEdge(HE* he) { halfEdge = he; }
+		void SetHalfEdge(H* he) { halfEdge = he; }
 
 		bool IsIsolated() const { return !halfEdge; }
 		bool IsBoundary() const;
-		size_t Degree() const { return OutHEs().size(); }
+		size_t Degree() const { return OutHalfEdges().size(); }
 
-		const std::vector<HE*> OutHEs() { return IsIsolated() ? std::vector<HE*>() : HalfEdge()->RotateNextLoop(); }
-		const std::vector<const HE*> OutHEs() const { return Const(const_cast<TVertex*>(this)->OutHEs()); }
+		const std::vector<H*> OutHalfEdges() { return IsIsolated() ? std::vector<H*>() : HalfEdge()->RotateNextLoop(); }
+		const std::vector<const H*> OutHalfEdges() const { return Const(const_cast<TVertex*>(this)->OutHalfEdges()); }
 
 		const std::vector<E*> AdjEdges();
-		const std::vector<const HE*> AdjEdges() const { return Const(const_cast<TVertex*>(this)->AdjEdges()); }
+		const std::vector<const H*> AdjEdges() const { return Const(const_cast<TVertex*>(this)->AdjEdges()); }
 
 		const std::vector<V*> AdjVertices();
 		const std::vector<const V*> AdjVertices() const { return Const(const_cast<TVertex*>(this)->AdjVertices()); }
@@ -34,14 +34,14 @@ namespace Ubpa {
 		const std::set<P*> AdjPolygons();
 		const std::set<const P*> AdjPolygons() const { return Const(const_cast<TVertex*>(this)->AdjPolygons()); }
 
-		HE* const FindFreeIncident();
-		const HE* const FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
+		H* const FindFreeIncident();
+		const H* const FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
 
-		HE* const HalfEdgeTo(V* end);
-		const HE* const HalfEdgeTo(const V* end) const { return const_cast<TVertex*>(this)->HalfEdgeTo(const_cast<V*>(end)); }
+		H* const HalfEdgeTo(V* end);
+		const H* const HalfEdgeTo(const V* end) const { return const_cast<TVertex*>(this)->HalfEdgeTo(const_cast<V*>(end)); }
 
-		static HE* const HalfEdgeAlong(V* origin, V* end) { return origin->HalfEdgeTo(end); }
-		static const HE* const HalfEdgeAlong(const V* origin, const V* end) { return HalfEdgeAlong(const_cast<V*>(origin), const_cast<V*>(end)); }
+		static H* const HalfEdgeAlong(V* origin, V* end) { return origin->HalfEdgeTo(end); }
+		static const H* const HalfEdgeAlong(const V* origin, const V* end) { return HalfEdgeAlong(const_cast<V*>(origin), const_cast<V*>(end)); }
 
 		E* const EdgeWith(V* v);
 		const E* const EdgeWith(const V* v) const { return const_cast<TVertex*>(this)->EdgeWith(const_cast<V*>(v)); }
@@ -53,7 +53,7 @@ namespace Ubpa {
 		static bool IsConnected(const V* v0, const V* v1) { return v0->IsConnectedWith(v1); }
 
 	private:
-		HE* halfEdge = nullptr;
+		H* halfEdge = nullptr;
 	};
 }
 

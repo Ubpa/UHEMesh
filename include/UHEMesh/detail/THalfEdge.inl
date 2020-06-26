@@ -2,18 +2,18 @@
 
 namespace Ubpa {
 	template<typename Traits>
-	HEMeshTriats_HE<Traits>* const THalfEdge<Traits>::Pre() {
+	HEMeshTriats_H<Traits>* const THalfEdge<Traits>::Pre() {
 		auto he = this;
 		auto next = he->Next();
 		do {
 			he = next;
 			next = he->Next();
 		} while (next != this);
-		return he;
+		return he->This();
 	}
 
 	template<typename Traits>
-	void THalfEdge<Traits>::Init(HE* next, HE* pair, V* v, E* e, P* p) {
+	void THalfEdge<Traits>::Init(H* next, H* pair, V* v, E* e, P* p) {
 		assert(next != nullptr && pair != nullptr && v != nullptr && e != nullptr);
 		this->next = next;
 		this->pair = pair;
@@ -23,19 +23,19 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	HEMeshTriats_HE<Traits>* const THalfEdge<Traits>::FindFreeIncident(HE* begin, HE* end) {
+	HEMeshTriats_H<Traits>* const THalfEdge<Traits>::FindFreeIncident(H* begin, H* end) {
 		assert(begin->End() == end->End());
 
 		for (auto he = begin; he != end; he = he->Next()->Pair()) {
 			if (he->IsFree())
-				return he;
+				return he->This();
 		}
 
 		return nullptr;
 	}
 
 	template<typename Traits>
-	bool THalfEdge<Traits>::MakeAdjacent(HE* inHE, HE* outHE) {
+	bool THalfEdge<Traits>::MakeAdjacent(H* inHE, H* outHE) {
 		assert(inHE->End() == outHE->Origin());
 
 		if (inHE->Next() == outHE)
@@ -57,8 +57,8 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	const std::vector<HEMeshTriats_HE<Traits>*> THalfEdge<Traits>::NextBetween(HE* begin, HE* end) {
-		std::vector<HE*> hes;
+	const std::vector<HEMeshTriats_H<Traits>*> THalfEdge<Traits>::NextBetween(H* begin, H* end) {
+		std::vector<H*> hes;
 		auto he = begin;
 		do {
 			hes.push_back(he);
@@ -68,8 +68,8 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	const std::vector<HEMeshTriats_HE<Traits>*> THalfEdge<Traits>::RotateNextBetween(HE* begin, HE* end) {
-		std::vector<HE*> hes;
+	const std::vector<HEMeshTriats_H<Traits>*> THalfEdge<Traits>::RotateNextBetween(H* begin, H* end) {
+		std::vector<H*> hes;
 		auto he = begin;
 		do {
 			hes.push_back(he);

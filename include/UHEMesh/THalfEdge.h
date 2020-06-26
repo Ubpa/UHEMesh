@@ -10,71 +10,75 @@ namespace Ubpa {
 		using V = HEMeshTriats_V<Traits>;
 		using E = HEMeshTriats_E<Traits>;
 		using P = HEMeshTriats_P<Traits>;
-		using HE = HEMeshTriats_HE<Traits>;
+		using H = HEMeshTriats_H<Traits>;
 
 	public:
-		HE* const Next() { return next; }
-		HE* const Pair() { return pair; }
+		H* const Next() { return next; }
+		H* const Pair() { return pair; }
 		V* const Origin() { return origin; }
 		E* const Edge() { return edge; }
 		P* const Polygon() { return polygon; }
 		V* const End() { return Next()->Origin(); }
-		HE* const Pre();
-		HE* const RotateNext() { return Pair()->Next(); }
-		HE* const RotatePre() { return Pre()->Pair(); }
+		H* const Pre();
+		H* const RotateNext() { return Pair()->Next(); }
+		H* const RotatePre() { return Pre()->Pair(); }
 
-		const HE* const Next() const { return const_cast<HE*>(this)->Next(); }
-		const HE* const Pair() const { return const_cast<HE*>(this)->Pair(); }
-		const V* const Origin() const { return const_cast<HE*>(this)->Origin(); }
-		const E* const Edge() const { return const_cast<HE*>(this)->Edge(); }
-		const P* const Polygon() const { return const_cast<HE*>(this)->Polygon(); }
-		const V* const End() const { return const_cast<HE*>(this)->End(); }
-		const HE* const Pre() const { return const_cast<HE*>(this)->Pre(); }
-		const HE* const RotateNext() const { return const_cast<HE*>(this)->RotateNext(); }
-		const HE* const RotatePre() const { return const_cast<HE*>(this)->RotatePre(); }
+		const H* const Next() const { return const_cast<H*>(This())->Next(); }
+		const H* const Pair() const { return const_cast<H*>(This())->Pair(); }
+		const V* const Origin() const { return const_cast<H*>(This())->Origin(); }
+		const E* const Edge() const { return const_cast<H*>(This())->Edge(); }
+		const P* const Polygon() const { return const_cast<H*>(This())->Polygon(); }
+		const V* const End() const { return const_cast<H*>(This())->End(); }
+		const H* const Pre() const { return const_cast<H*>(This())->Pre(); }
+		const H* const RotateNext() const { return const_cast<H*>(This())->RotateNext(); }
+		const H* const RotatePre() const { return const_cast<H*>(This())->RotatePre(); }
 
-		void SetNext(HE* he) { next = he; }
-		void SetPair(HE* he) { pair = he; }
+		void SetNext(H* he) { next = he; }
+		void SetPair(H* he) { pair = he; }
 		void SetOrigin(V* v) { origin = v; }
 		void SetEdge(E* e) { edge = e; }
 		void SetPolygon(P* p) { polygon = p; }
-		void Init(HE* next, HE* pair, V* v, E* e, P* p);
+		void Init(H* next, H* pair, V* v, E* e, P* p);
 
 		bool IsFree() const { return !polygon; }
 		bool IsBoundary() const { return !polygon; }
 
-		static HE* const FindFreeIncident(HE* begin, HE* end);
-		static const HE* const FindFreeIncident(const HE* begin, const HE* end) { return FindFreeIncident(const_cast<HE*>(begin), const_cast<HE*>(end)); }
+		static H* const FindFreeIncident(H* begin, H* end);
+		static const H* const FindFreeIncident(const H* begin, const H* end) { return FindFreeIncident(const_cast<H*>(begin), const_cast<H*>(end)); }
 
-		static bool MakeAdjacent(HE* inHE, HE* outHE);
+		static bool MakeAdjacent(H* inHE, H* outHE);
 
 		// [begin, end), if begin == end, return a loop
-		static const std::vector<HE*> NextBetween(HE* begin, HE* end);
-		static const std::vector<const HE*> NextBetween(const HE* begin, const HE* end) { return Const(NextBetween(const_cast<HE*>(begin), const_cast<HE*>(end))); }
+		static const std::vector<H*> NextBetween(H* begin, H* end);
+		static const std::vector<const H*> NextBetween(const H* begin, const H* end) { return Const(NextBetween(const_cast<H*>(begin), const_cast<H*>(end))); }
 
 		// [this, end), NextBetween(this, end);
-		const std::vector<HE*> NextTo(HE* end) { return NextBetween(this, end); }
-		const std::vector<const HE*> NextTo(const HE* end) const { return NextBetween(this, end); }
+		const std::vector<H*> NextTo(H* end) { return NextBetween(This(), end); }
+		const std::vector<const H*> NextTo(const H* end) const { return NextBetween(This(), end); }
 
 		// NextBetween(this, this), a loop from this to this
-		const std::vector<HE*> NextLoop() { return NextTo(this); }
-		const std::vector<const HE*> NextLoop() const { return NextTo(this); }
+		const std::vector<H*> NextLoop() { return NextTo(This()); }
+		const std::vector<const H*> NextLoop() const { return NextTo(This()); }
 
 		// [begin, end), if begin == end, return a loop
-		static const std::vector<HE*> RotateNextBetween(HE* begin, HE* end);
-		static const std::vector<const HE*> RotateNextBetween(const HE* begin, const HE* end) { return Const(RotateNextBetween(const_cast<HE*>(begin), const_cast<HE*>(end))); }
+		static const std::vector<H*> RotateNextBetween(H* begin, H* end);
+		static const std::vector<const H*> RotateNextBetween(const H* begin, const H* end) {
+			return Const(RotateNextBetween(const_cast<H*>(begin), const_cast<H*>(end))); }
 
 		// [this, end), RotateNextBetween(this, end);
-		const std::vector<HE*> RotateNextTo(HE* end) { return RotateNextBetween(this, end); }
-		const std::vector<const HE*> RotateNextTo(const HE* end) const { return RotateNextBetween(this, end); }
+		const std::vector<H*> RotateNextTo(H* end) { return RotateNextBetween(This(), end); }
+		const std::vector<const H*> RotateNextTo(const H* end) const { return RotateNextBetween(This(), end); }
 
 		// RotateNextBetween(this, this), a loop from this to this
-		const std::vector<HE*> RotateNextLoop() { return RotateNextTo(this); }
-		const std::vector<const HE*> RotateNextLoop() const { return RotateNextTo(this); }
+		const std::vector<H*> RotateNextLoop() { return RotateNextTo(This()); }
+		const std::vector<const H*> RotateNextLoop() const { return RotateNextTo(This()); }
 
 	private:
-		HE* next = nullptr;
-		HE* pair = nullptr;
+		H* This() noexcept { return static_cast<H*>(this); }
+		const H* This() const noexcept { return static_cast<const H*>(this); }
+
+		H* next = nullptr;
+		H* pair = nullptr;
 
 		V* origin = nullptr;
 		E* edge = nullptr;

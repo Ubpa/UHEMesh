@@ -8,7 +8,7 @@ using namespace std;
 class V;
 class E;
 class P;
-using TraitsVEP = HEMeshTriats<V, E, P>;
+using TraitsVEP = HEMeshTriats_EmptyH<V, E, P>;
 class V : public TVertex<TraitsVEP> {
 public:
 	V(const string& name = "NO_NAME") : name(name) {}
@@ -49,7 +49,7 @@ ostream& operator<< (ostream& os, V* v) {
 	return os;
 }
 
-ostream& operator<< (ostream& os, HEMesh<TraitsVEP>::HE * he) {
+ostream& operator<< (ostream& os, HEMesh<TraitsVEP>::H * he) {
 	os << he->Origin() << "->" << he->End();
 	return os;
 }
@@ -304,7 +304,7 @@ int main() {
 		auto mesh1 = make_shared<HEMesh<TraitsVEP>>(); // V E P
 		class tV;
 		class tE;
-		using TraitsVE = HEMeshTriats_EmptyP<tV, tE>;
+		using TraitsVE = HEMeshTriats_EmptyPH<tV, tE>;
 		class tV : public TVertex<TraitsVE> {};
 		class tE : public TEdge<TraitsVE> {};
 		auto mesh2 = make_shared<HEMesh<TraitsVE>>();

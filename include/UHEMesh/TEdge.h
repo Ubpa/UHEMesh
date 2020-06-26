@@ -10,13 +10,13 @@ namespace Ubpa {
 		using V = HEMeshTriats_V<Traits>;
 		using E = HEMeshTriats_E<Traits>;
 		using P = HEMeshTriats_P<Traits>;
-		using HE = HEMeshTriats_HE<Traits>;
+		using H = HEMeshTriats_H<Traits>;
 
 	public:
-		HE* const HalfEdge() { return halfEdge; }
-		const HE* const HalfEdge() const { return const_cast<TEdge*>(this)->HalfEdge(); }
+		H* const HalfEdge() { return halfEdge; }
+		const H* const HalfEdge() const { return const_cast<TEdge*>(this)->HalfEdge(); }
 
-		void SetHalfEdge(HE* he) { halfEdge = he; }
+		void SetHalfEdge(H* he) { halfEdge = he; }
 
 		bool IsBoundary() const { return HalfEdge()->IsBoundary() || HalfEdge()->Pair()->IsBoundary(); }
 		bool IsFree() const { return HalfEdge()->IsFree() && HalfEdge()->Pair()->IsFree(); }
@@ -24,8 +24,8 @@ namespace Ubpa {
 		// clockwise
 		// + [he.RotateNext, he.RotateNext.RotateNext, ..., he)
 		// + [he.next, he.next.RotateNext, ..., he.pair)
-		const std::vector<HE*> OutHEs();
-		const std::vector<const HE*> AdjOutHEs() const { return Const(const_cast<TEdge*>(this)->AdjOutHEs()); }
+		const std::vector<H*> OutHalfEdges();
+		const std::vector<const H*> AdjOutHalfEdges() const { return Const(const_cast<TEdge*>(this)->AdjOutHalfEdges()); }
 
 		const std::set<V*> AdjVertices();
 		const std::set<const V*> AdjVertices() const { return Const(const_cast<TEdge*>(this)->AdjVertices()); }
@@ -34,7 +34,7 @@ namespace Ubpa {
 		const std::vector<const E*> AdjEdges() const { return Const(const_cast<TEdge*>(this)->AdjEdges()); }
 
 	private:
-		HE* halfEdge = nullptr;
+		H* halfEdge = nullptr;
 	};
 }
 

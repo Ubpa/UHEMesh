@@ -20,7 +20,7 @@ namespace Ubpa {
 	template<typename Traits>
 	const std::vector<HEMeshTriats_E<Traits>*> TVertex<Traits>::AdjEdges() {
 		std::vector<E*> edges;
-		for (auto he : OutHEs())
+		for (auto he : OutHalfEdges())
 			edges.push_back(he->Edge());
 		return edges;
 	}
@@ -28,7 +28,7 @@ namespace Ubpa {
 	template<typename Traits>
 	const std::vector<HEMeshTriats_V<Traits>*> TVertex<Traits>::AdjVertices() {
 		std::vector<V*> adjVs;
-		for (auto he : OutHEs())
+		for (auto he : OutHalfEdges())
 			adjVs.push_back(he->End());
 		return adjVs;
 	}
@@ -36,13 +36,13 @@ namespace Ubpa {
 	template<typename Traits>
 	const std::set<HEMeshTriats_P<Traits>*> TVertex<Traits>::AdjPolygons() {
 		std::set<P*> adjPs;
-		for (auto he : OutHEs())
+		for (auto he : OutHalfEdges())
 			adjPs.insert(he->Polygon());
 		return adjPs;
 	}
 
 	template<typename Traits>
-	HEMeshTriats_HE<Traits>* const TVertex<Traits>::FindFreeIncident() {
+	HEMeshTriats_H<Traits>* const TVertex<Traits>::FindFreeIncident() {
 		if (IsIsolated())
 			return nullptr;
 
@@ -58,7 +58,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	HEMeshTriats_HE<Traits>* const TVertex<Traits>::HalfEdgeTo(V* end) {
+	HEMeshTriats_H<Traits>* const TVertex<Traits>::HalfEdgeTo(V* end) {
 		if (IsIsolated())
 			return nullptr;
 

@@ -7,13 +7,13 @@
 
 namespace Ubpa {
 	// nullptr Polygon is a boundary
-	template<typename Traits = HEMeshTriats_EmptyVEP>
+	template<typename Traits = HEMeshTriats_EmptyVEPH>
 	class HEMesh {
 	public:
 		using V = HEMeshTriats_V<Traits>;
 		using E = HEMeshTriats_E<Traits>;
 		using P = HEMeshTriats_P<Traits>;
-		using HE = HEMeshTriats_HE<Traits>;
+		using H = HEMeshTriats_H<Traits>;
 
 		static_assert(Traits::IsValid());
 
@@ -24,15 +24,15 @@ namespace Ubpa {
 
 	public:
 		const std::vector<V*>& Vertices() { return vertices.vec(); }
-		const std::vector<HE*>& HalfEdges() { return halfEdges.vec(); }
+		const std::vector<H*>& HalfEdges() { return halfEdges.vec(); }
 		const std::vector<E*>& Edges() { return edges.vec(); }
 		const std::vector<P*>& Polygons() { return polygons.vec(); }
 		/*
-		* ordered boundary == std::vector<HE*>
+		* ordered boundary == std::vector<H*>
 		* boundaries == std::vector<ordered boundary>
 		* there maybe several boundaries in a mesh
 		*/
-		const std::vector<std::vector<HE*>> Boundaries();
+		const std::vector<std::vector<H*>> Boundaries();
 
 		size_t NumVertices() const { return vertices.size(); }
 		size_t NumEdges() const { return edges.size(); }
@@ -71,7 +71,7 @@ namespace Ubpa {
 		E* const AddEdge(V* v0, V* v1, Args&& ... args);
 		// polygon's halfedge is heLoop[0]
 		template<typename ...Args>
-		P* const AddPolygon(const std::vector<HE*> heLoop, Args&& ... args);
+		P* const AddPolygon(const std::vector<H*> heLoop, Args&& ... args);
 		void RemovePolygon(P* polygon);
 		void RemoveEdge(E* e);
 		void RemoveVertex(V* v);
@@ -92,7 +92,7 @@ namespace Ubpa {
 		// [require] he0.polygon == he1.polygon, he0.origin != he1.origin
 		// [return] edge with halfedge form he0.origin to he1.origin
 		template<typename ...Args>
-		E* const ConnectVertex(HE* he0, HE* he1, Args&& ... args);
+		E* const ConnectVertex(H* he0, H* he1, Args&& ... args);
 
 		// counter-clock, remain e in container, won't break iteration
 		bool FlipEdge(E* e);
@@ -118,12 +118,12 @@ namespace Ubpa {
 		void Delete(T* elem);
 
 	private:
-		random_set<HE*> halfEdges;
+		random_set<H*> halfEdges;
 		random_set<V*> vertices;
 		random_set<E*> edges;
 		random_set<P*> polygons;
 
-		Pool<HE> poolHE;
+		Pool<H> poolHE;
 		Pool<V> poolV;
 		Pool<E> poolE;
 		Pool<P> poolP;
@@ -131,7 +131,7 @@ namespace Ubpa {
 		// =============================
 
 		template<>
-		struct MemVarOf<HE> {
+		struct MemVarOf<H> {
 			static auto& pool(HEMesh* mesh) { return mesh->poolHE; }
 			static auto& set(HEMesh* mesh) { return mesh->halfEdges; }
 		};

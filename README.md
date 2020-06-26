@@ -12,11 +12,11 @@ an elegant, high-performance, user-friendly halfedge data structure
 
 - Elegant: store **topology** only
 - High-performance: **cache-friendly** 
-- User-friendly: you can custom `vertex`, `edge` and `polygon` class
+- User-friendly: you can custom **Vertex, Edge, Polygon and Half-Edge** class
 
 ## Usage
 
-### default Vertex, Edge and Polygon class
+### default Vertex, Edge, Polygon and Half-Edge class
 
 ```c++
 #include <UHEMesh/HEMesh.h>
@@ -28,7 +28,7 @@ int main() {
 }
 ```
 
-### custom Vertex, Edge and Polygon class
+### custom Vertex, Edge, Polygon and Half-Edge class
 
 ```c++
 #include <UHEMesh/HEMesh.h>
@@ -38,14 +38,16 @@ using namespace Ubpa;
 class V;
 class E;
 class P;
-using Traits_VEP = HEMeshTraits<V, E, P>;
-// custom vertex, edge and polygon class
-class V : public TVertex<Traits_VEP> { /*...*/ }
-class E : public TEdge<Traits_VEP> { /*...*/ }
-class P : public TPolygon<Traits_VEP> { /*...*/ }
+class H;
+using Traits_VEPH = HEMeshTraits<V, E, P, H>;
+// custom vertex, edge, polygon and half-edge class
+class V : public TVertex  <Traits_VEPH> { /*...*/ }
+class E : public TEdge    <Traits_VEPH> { /*...*/ }
+class P : public TPolygon <Traits_VEPH> { /*...*/ }
+class H : public THalfEdge<Traits_VEPH> { /*...*/ }
 int main() {
     std::vector<size_t> indices = {0,1,2,0,2,3};
-    HEMesh<Traits_VEP> mesh(indices, 3);
+    HEMesh<Traits_VEPH> mesh(indices, 3);
     // ...
 }
 ```
@@ -54,6 +56,6 @@ int main() {
 
 - customed class `T` should have a constructor with default arguments, e.g. `T(argT0 arg0 = val0, ...)` 
 - you can get vertex, edge, polygon and halfedge type by `HEMesh<...>::V/E/P/HE` 
-- use `EmptyE<V, P>`、`EmptyP<V, E>`、`EmptyEP_E<V>`、`EmptyEP_P<V>` when you don't custom `Edge` or `Polygon` type
+- use `Empty*_*` type if you don't need to custom some class
 - boundary polygon is `nullptr` or use `HEMesh<...>::P::IsBoundary(polygon)` to avoid literal value
 

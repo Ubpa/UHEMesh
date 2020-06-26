@@ -10,28 +10,31 @@ namespace Ubpa {
 		using V = HEMeshTriats_V<Traits>;
 		using E = HEMeshTriats_E<Traits>;
 		using P = HEMeshTriats_P<Traits>;
-		using HE = HEMeshTriats_HE<Traits>;
+		using H = HEMeshTriats_H<Traits>;
 
 	public:
-		HE* const HalfEdge() { return halfEdge; }
-		const HE* const HalfEdge() const { return const_cast<TPolygon*>(this)->HalfEdge(); }
+		H* const HalfEdge() { return halfEdge; }
+		const H* const HalfEdge() const { return const_cast<TPolygon*>(this)->HalfEdge(); }
 
-		void SetHalfEdge(HE* he) { halfEdge = he; }
+		void SetHalfEdge(H* he) { halfEdge = he; }
 
 		static bool IsBoundary(const P* p) { return p == nullptr; }
-		size_t Degree() const { return static_cast<int>(const_cast<TPolygon*>(this)->BoundaryHEs().size()); }
+		size_t Degree() const { return static_cast<int>(const_cast<TPolygon*>(this)->AdjHalfEdges().size()); }
 
-		const std::vector<HE*> BoundaryHEs() { return HalfEdge()->NextLoop(); }
-		const std::vector<const HE*> BoundaryHEs() const { return Const(const_cast<TPolygon*>(this)->BoundaryHEs()); }
+		const std::vector<H*> AdjHalfEdges() { return HalfEdge()->NextLoop(); }
+		const std::vector<const H*> AdjHalfEdges() const { return Const(const_cast<TPolygon*>(this)->AdjHalfEdges()); }
 
-		const std::vector<E*> BoundaryEdges();
-		const std::vector<const E*> BoundaryEdges() const { return Const(const_cast<TPolygon*>(this)->BoundaryEdges()); }
+		const std::vector<E*> AdjEdges();
+		const std::vector<const E*> AdjEdges() const { return Const(const_cast<TPolygon*>(this)->AdjEdges()); }
 
-		const std::vector<V*> BoundaryVertice();
-		const std::vector<const V*> BoundaryVertice() const { return Const(const_cast<TPolygon*>(this)->BoundaryVertice()); }
+		const std::vector<V*> AdjVertices();
+		const std::vector<const V*> AdjVertices() const { return Const(const_cast<TPolygon*>(this)->AdjVertices()); }
+
+		const std::vector<P*> AdjPolygons();
+		const std::vector<const V*> AdjPolygons() const { return Const(const_cast<TPolygon*>(this)->AdjVertices()); }
 
 	private:
-		HE* halfEdge = nullptr;
+		H* halfEdge = nullptr;
 	};
 
 }
