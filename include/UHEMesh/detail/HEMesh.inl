@@ -824,6 +824,39 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
+	bool HEMesh<Traits>::IsCollapsable(E* e) const {
+		auto he01 = e->HalfEdge();
+		auto he10 = he01->Pair();
+
+		auto v0 = he01->Origin();
+		auto v1 = he01->End();
+
+		size_t p01D = he01->NextLoop().size();
+		size_t p10D = he10->NextLoop().size();
+
+		std::vector<V*> comVs;
+		auto v0AdjVs = v0->AdjVertices();
+		auto v1AdjVs = v1->AdjVertices();
+		sort(v0AdjVs.begin(), v0AdjVs.end());
+		sort(v1AdjVs.begin(), v1AdjVs.end());
+		std::set_intersection(v0AdjVs.begin(), v0AdjVs.end(), v1AdjVs.begin(), v1AdjVs.end(),
+			std::insert_iterator<std::vector<V*>>(comVs, comVs.begin()));
+
+		size_t limit = 2;
+		if (p01D > 3)
+			limit -= 1;
+		if (p10D > 3)
+			limit -= 1;
+		if (comVs.size() > limit)
+			return false;
+
+		if (v0->IsBoundary() && v1->IsBoundary() && !e->IsBoundary())
+			return false;
+
+		return true;
+	}
+
+	template<typename Traits>
 	template<typename ... Args>
 	HEMeshTriats_V<Traits>* const HEMesh<Traits>::CollapseEdge(E* e, Args&& ...args) {
 		auto he01 = e->HalfEdge();

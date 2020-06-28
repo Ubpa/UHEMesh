@@ -25,25 +25,25 @@ namespace Ubpa {
 			Tmap.erase(target);
 		}
 
-		auto begin() { return Tvec.begin(); }
-		auto begin() const { return Tvec.begin(); }
-		auto end() { return Tvec.end(); }
-		auto end() const { return Tvec.end(); }
+		auto begin() noexcept { return Tvec.begin(); }
+		auto begin() const noexcept { return Tvec.begin(); }
+		auto end() noexcept { return Tvec.end(); }
+		auto end() const noexcept { return Tvec.end(); }
 
 		T& operator[](size_t i) { return Tvec[i]; }
 		const T& operator[](size_t i) const { return Tvec[i]; }
 
-		size_t size() const { return Tvec.size(); }
+		size_t size() const noexcept { return Tvec.size(); }
 		void reserve(size_t n) {
 			Tvec.reserve(n);
 			Tmap.reserve(n);
 		}
-		void clear() {
+		void clear() noexcept {
 			Tvec.clear();
 			Tmap.clear();
 		}
 
-		const std::vector<T>& vec() const { return Tvec; }
+		const std::vector<T>& vec() const noexcept { return Tvec; }
 
 		size_t idx(const T& e) const {
 			assert(Tmap.find(e) != Tmap.end());
@@ -52,7 +52,7 @@ namespace Ubpa {
 
 		bool contains(const T& e) const { return Tmap.find(e) != Tmap.end(); }
 
-		bool empty() const { return Tvec.empty(); }
+		bool empty() const noexcept { return Tvec.empty(); }
 	private:
 		std::unordered_map<T, size_t, Hasher> Tmap;
 		std::vector<T> Tvec;

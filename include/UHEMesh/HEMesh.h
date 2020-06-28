@@ -23,10 +23,14 @@ namespace Ubpa {
 		HEMesh(const std::vector<size_t>& polygons, size_t sides) { Init(polygons, sides); }
 
 	public:
-		const std::vector<V*>& Vertices() { return vertices.vec(); }
-		const std::vector<H*>& HalfEdges() { return halfEdges.vec(); }
-		const std::vector<E*>& Edges() { return edges.vec(); }
-		const std::vector<P*>& Polygons() { return polygons.vec(); }
+		const std::vector<V*>& Vertices() noexcept { return vertices.vec(); }
+		const std::vector<E*>& Edges() noexcept { return edges.vec(); }
+		const std::vector<P*>& Polygons() noexcept { return polygons.vec(); }
+		const std::vector<H*>& HalfEdges() noexcept { return halfEdges.vec(); }
+		const std::vector<const V*>& Vertices() const noexcept { return reinterpret_cast<const std::vector<const V*>&>(vertices.vec()); }
+		const std::vector<const E*>& Edges() const noexcept { return reinterpret_cast<const std::vector<const E*>&>(edges.vec()); }
+		const std::vector<const P*>& Polygons() const noexcept { return reinterpret_cast<const std::vector<const P*>&>(polygons.vec()); }
+		const std::vector<const H*>& HalfEdges() const noexcept { return reinterpret_cast<const std::vector<const H*>&>(halfEdges.vec()); }
 		/*
 		* ordered boundary == std::vector<H*>
 		* boundaries == std::vector<ordered boundary>
@@ -101,6 +105,7 @@ namespace Ubpa {
 		template<typename ...Args>
 		V* const SplitEdge(E* e, Args&& ... args);
 
+		bool IsCollapsable(E* e) const;
 		// won't collapse in unsafe situation, return nullptr
 		template<typename ...Args>
 		V* const CollapseEdge(E* e, Args&& ... args);
