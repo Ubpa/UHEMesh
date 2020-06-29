@@ -297,16 +297,16 @@ namespace Ubpa {
 	template<typename Traits>
 	void HEMesh<Traits>::Reserve(size_t n) {
 		vertices.reserve(n);
-		poolV.reserve(n);
+		poolV.Reserve(n);
 
 		halfEdges.reserve(6 * n);
-		poolHE.reserve(6 * n);
+		poolHE.Reserve(6 * n);
 
 		edges.reserve(3 * n);
-		poolE.reserve(3 * n);
+		poolE.Reserve(3 * n);
 
 		polygons.reserve(2 * n);
-		poolP.reserve(2 * n);
+		poolP.Reserve(2 * n);
 	}
 
 	template<typename Traits>
