@@ -68,14 +68,14 @@ namespace Ubpa {
 		//  basic mesh edit
 		// -----------------
 
-		template<typename ...Args>
-		V* const AddVertex(Args&& ... args) { return New<V>(std::forward<Args>(args)...); }
+		template<typename... Args>
+		V* const AddVertex(Args&&... args) { return New<V>(std::forward<Args>(args)...); }
 		// e's halfedge is form v0 to v1
-		template<typename ...Args>
-		E* const AddEdge(V* v0, V* v1, Args&& ... args);
+		template<typename... Args>
+		E* const AddEdge(V* v0, V* v1, Args&&... args);
 		// polygon's halfedge is heLoop[0]
-		template<typename ...Args>
-		P* const AddPolygon(const std::vector<H*> heLoop, Args&& ... args);
+		template<typename... Args>
+		P* const AddPolygon(const std::vector<H*> heLoop, Args&&... args);
 		void RemovePolygon(P* polygon);
 		void RemoveEdge(E* e);
 		void RemoveVertex(V* v);
@@ -89,34 +89,34 @@ namespace Ubpa {
 
 		// edge's halfedge : v0=>v1
 		// nweV's halfedge : newV => v1
-		template<typename ...Args>
-		V* const AddEdgeVertex(E* e, Args&& ... args);
+		template<typename... Args>
+		V* const AddEdgeVertex(E* e, Args&&... args);
 
 		// connect he0.origin and he1.origin in he0/he1.polygon
 		// [require] he0.polygon == he1.polygon, he0.origin != he1.origin
 		// [return] edge with halfedge form he0.origin to he1.origin
-		template<typename ...Args>
-		E* const ConnectVertex(H* he0, H* he1, Args&& ... args);
+		template<typename... Args>
+		E* const ConnectVertex(H* he0, H* he1, Args&&... args);
 
 		// counter-clock, remain e in container, won't break iteration
 		bool FlipEdge(E* e);
 
 		// delete e
-		template<typename ...Args>
-		V* const SplitEdge(E* e, Args&& ... args);
+		template<typename... Args>
+		V* const SplitEdge(E* e, Args&&... args);
 
 		bool IsCollapsable(E* e) const;
 		// won't collapse in unsafe situation, return nullptr
-		template<typename ...Args>
-		V* const CollapseEdge(E* e, Args&& ... args);
+		template<typename... Args>
+		V* const CollapseEdge(E* e, Args&&... args);
 
 	private:
 		template<typename T> struct MemVarOf;
 		template<typename T>
 		friend struct MemVarOf;
 		// new and insert
-		template<typename T, typename ... Args>
-		T* const New(Args&& ... args);
+		template<typename T, typename... Args>
+		T* const New(Args&&... args);
 
 		// clear and erase
 		template<typename T>

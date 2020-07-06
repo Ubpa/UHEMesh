@@ -1,5 +1,5 @@
 Ubpa_AddTarget(
-  MODE HEAD
+  MODE INTERFACE
   INC
-    "include"
+    "${PROJECT_SOURCE_DIR}/include"
 )
