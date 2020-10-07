@@ -12,41 +12,47 @@ namespace Ubpa {
 		using H = HEMeshTriats_H<Traits>;
 
 	public:
-		H* const HalfEdge() { return halfEdge; }
-		const H* const HalfEdge() const { return const_cast<TVertex*>(this)->HalfEdge(); }
+		H* const HalfEdge() noexcept { return halfEdge; }
+		const H* const HalfEdge() const noexcept { return const_cast<TVertex*>(this)->HalfEdge(); }
 
-		void SetHalfEdge(H* he) { halfEdge = he; }
+		void SetHalfEdge(H* he) noexcept { halfEdge = he; }
 
-		bool IsIsolated() const { return !halfEdge; }
-		bool IsBoundary() const;
-		size_t Degree() const { return const_cast<TVertex*>(this)->OutHalfEdges().size(); }
+		bool IsIsolated() const noexcept { return !halfEdge; }
+		bool IsBoundary() const noexcept;
+		size_t Degree() const noexcept;
 
-		const std::vector<H*> OutHalfEdges() { return IsIsolated() ? std::vector<H*>() : HalfEdge()->RotateNextLoop(); }
+		const std::vector<H*> OutHalfEdges()
+		{ return IsIsolated() ? std::vector<H*>() : HalfEdge()->RotateNextLoop(); }
 
 		const std::vector<E*> AdjEdges();
 
 		const std::vector<V*> AdjVertices();
 
+		// if IsBoundary(), result contains nullptr
+		// use P::IsBoundary() to find it
 		const std::set<P*> AdjPolygons();
 
-		H* const HalfEdgeTo(V* end);
-		const H* const HalfEdgeTo(const V* end) const { return const_cast<TVertex*>(this)->HalfEdgeTo(const_cast<V*>(end)); }
+		H* const HalfEdgeTo(V* end) noexcept;
+		const H* const HalfEdgeTo(const V* end) const noexcept
+		{ return const_cast<TVertex*>(this)->HalfEdgeTo(const_cast<V*>(end)); }
 
-		static H* const HalfEdgeAlong(V* origin, V* end) { return origin->HalfEdgeTo(end); }
-		static const H* const HalfEdgeAlong(const V* origin, const V* end) { return HalfEdgeAlong(const_cast<V*>(origin), const_cast<V*>(end)); }
+		static H* const HalfEdgeAlong(V* origin, V* end) noexcept { return origin->HalfEdgeTo(end); }
+		static const H* const HalfEdgeAlong(const V* origin, const V* end) noexcept
+		{ return HalfEdgeAlong(const_cast<V*>(origin), const_cast<V*>(end)); }
 
-		E* const EdgeWith(V* v);
-		const E* const EdgeWith(const V* v) const { return const_cast<TVertex*>(this)->EdgeWith(const_cast<V*>(v)); }
+		E* const EdgeWith(V* v) noexcept;
+		const E* const EdgeWith(const V* v) const noexcept { return const_cast<TVertex*>(this)->EdgeWith(const_cast<V*>(v)); }
 
-		static E* const EdgeBetween(V* v0, V* v1) { return v0->EdgeWith(v1); }
-		static const E* const EdgeBetween(const V* v0, const V* v1) { return EdgeBetween(const_cast<V*>(v0), const_cast<V*>(v1)); }
+		static E* const EdgeBetween(V* v0, V* v1) noexcept { return v0->EdgeWith(v1); }
+		static const E* const EdgeBetween(const V* v0, const V* v1) noexcept
+		{ return EdgeBetween(const_cast<V*>(v0), const_cast<V*>(v1)); }
 
-		bool IsConnectedWith(const V* v) const { return EdgeWith(v); }
-		static bool IsConnected(const V* v0, const V* v1) { return v0->IsConnectedWith(v1); }
+		bool IsConnectedWith(const V* v) const noexcept { return EdgeWith(v); }
+		static bool IsConnected(const V* v0, const V* v1) noexcept { return v0->IsConnectedWith(v1); }
 
 	private:
-		friend class HEMesh<Traits>;
-		H* const FindFreeIncident();
+		friend HEMesh<Traits>;
+		H* const FindFreeIncident() noexcept;
 
 		H* halfEdge{ nullptr };
 	};

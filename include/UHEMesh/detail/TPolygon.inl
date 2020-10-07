@@ -2,6 +2,19 @@
 
 namespace Ubpa {
 	template<typename Traits>
+	size_t TPolygon<Traits>::Degree() const noexcept {
+		size_t degree = 0;
+		auto begin = HalfEdge();
+		auto he = begin;
+		assert(he);
+		do {
+			++degree;
+			he = he->Next();
+		} while (he != begin);
+		return degree;
+	}
+
+	template<typename Traits>
 	const std::vector<HEMeshTriats_E<Traits>*> TPolygon<Traits>::AdjEdges() {
 		std::vector<E*> edges;
 		for (auto he : AdjHalfEdges())

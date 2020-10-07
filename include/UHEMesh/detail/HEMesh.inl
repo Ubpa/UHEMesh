@@ -287,10 +287,37 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	void HEMesh<Traits>::Clear() {
+	void HEMesh<Traits>::Clear() noexcept {
+		if constexpr (std::is_trivially_destructible_v<V>)
+			poolV.FastClear();
+		else {
+			for (auto v : vertices.vec())
+				poolV.Recycle(v);
+		}
 		vertices.clear();
+
+		if constexpr (std::is_trivially_destructible_v<H>)
+			poolHE.FastClear();
+		else {
+			for (auto he : halfEdges.vec())
+				poolHE.Recycle(he);
+		}
 		halfEdges.clear();
+
+		if constexpr (std::is_trivially_destructible_v<E>)
+			poolE.FastClear();
+		else {
+			for (auto e : edges.vec())
+				poolE.Recycle(e);
+		}
 		edges.clear();
+
+		if constexpr (std::is_trivially_destructible_v<P>)
+			poolP.FastClear();
+		else {
+			for (auto p : polygons.vec())
+				poolP.Recycle(p);
+		}
 		polygons.clear();
 	}
 
@@ -310,7 +337,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	bool HEMesh<Traits>::HaveBoundary() const {
+	bool HEMesh<Traits>::HaveBoundary() const noexcept {
 		for (auto he : halfEdges) {
 			if (he->IsBoundary())
 				return true;
@@ -319,7 +346,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	bool HEMesh<Traits>::HaveIsolatedVertices() const {
+	bool HEMesh<Traits>::HaveIsolatedVertices() const noexcept {
 		for (auto v : vertices) {
 			if (v->IsIsolated())
 				return true;

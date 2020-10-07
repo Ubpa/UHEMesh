@@ -12,13 +12,13 @@ namespace Ubpa {
 		using H = HEMeshTriats_H<Traits>;
 
 	public:
-		H* const HalfEdge() { return halfEdge; }
-		const H* const HalfEdge() const { return const_cast<TPolygon*>(this)->HalfEdge(); }
+		H* const HalfEdge() noexcept { return halfEdge; }
+		const H* const HalfEdge() const noexcept { return const_cast<TPolygon*>(this)->HalfEdge(); }
 
-		void SetHalfEdge(H* he) { halfEdge = he; }
+		void SetHalfEdge(H* he) noexcept { halfEdge = he; }
 
-		static bool IsBoundary(const P* p) { return p == nullptr; }
-		size_t Degree() const { return static_cast<int>(const_cast<TPolygon*>(this)->AdjHalfEdges().size()); }
+		static bool IsBoundary(const P* p) noexcept { return p == nullptr; }
+		size_t Degree() const noexcept;
 
 		const std::vector<H*> AdjHalfEdges() { return HalfEdge()->NextLoop(); }
 
@@ -29,7 +29,7 @@ namespace Ubpa {
 		const std::vector<P*> AdjPolygons();
 
 	private:
-		friend class HEMesh<Traits>;
+		friend HEMesh<Traits>;
 
 		H* halfEdge{ nullptr };
 	};

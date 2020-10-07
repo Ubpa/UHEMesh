@@ -2,7 +2,7 @@
 
 namespace Ubpa {
 	template<typename Traits>
-	HEMeshTriats_H<Traits>* const THalfEdge<Traits>::Pre() {
+	HEMeshTriats_H<Traits>* const THalfEdge<Traits>::Pre() noexcept {
 		auto he = this;
 		auto next = he->Next();
 		do {
@@ -13,7 +13,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	void THalfEdge<Traits>::Init(H* next, H* pair, V* v, E* e, P* p) {
+	void THalfEdge<Traits>::Init(H* next, H* pair, V* v, E* e, P* p) noexcept {
 		assert(next != nullptr && pair != nullptr && v != nullptr && e != nullptr);
 		this->next = next;
 		this->pair = pair;
