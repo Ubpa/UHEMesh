@@ -31,7 +31,7 @@ namespace Ubpa {
 		const std::vector<const V*> AdjVertices() const { return Const(const_cast<TPolygon*>(this)->AdjVertices()); }
 
 		const std::vector<P*> AdjPolygons();
-		const std::vector<const V*> AdjPolygons() const { return Const(const_cast<TPolygon*>(this)->AdjVertices()); }
+		const std::vector<const V*> AdjPolygons() const { return Const(const_cast<TPolygon*>(this)->AdjPolygons()); }
 
 	private:
 		H* halfEdge = nullptr;

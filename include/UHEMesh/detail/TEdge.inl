@@ -2,7 +2,7 @@
 
 namespace Ubpa {
 	template<typename Traits>
-	const std::vector<HEMeshTriats_H<Traits>*> TEdge<Traits>::OutHalfEdges() {
+	const std::vector<HEMeshTriats_H<Traits>*> TEdge<Traits>::AdjOutHalfEdges() {
 		std::vector<H*> hes;
 		auto he01 = HalfEdge(); // v0 => v1
 		for (auto he = he01->RotateNext(); he != he01; he = he->RotateNext())

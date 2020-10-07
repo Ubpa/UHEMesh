@@ -35,7 +35,7 @@ namespace Ubpa {
 		const std::set<const P*> AdjPolygons() const { return Const(const_cast<TVertex*>(this)->AdjPolygons()); }
 
 		H* const FindFreeIncident();
-		const H* const FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeOutHE(); }
+		const H* const FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeIncident(); }
 
 		H* const HalfEdgeTo(V* end);
 		const H* const HalfEdgeTo(const V* end) const { return const_cast<TVertex*>(this)->HalfEdgeTo(const_cast<V*>(end)); }
