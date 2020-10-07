@@ -54,8 +54,29 @@ int main() {
 
 ## Tips
 
-- customed class `T` should have a constructor with default arguments, e.g. `T(argT0 arg0 = val0, ...)` 
+- customed class `T` should `std::is_default_constructibl` 
+
 - you can get vertex, edge, polygon and halfedge type by `HEMesh<...>::V/E/P/HE` 
-- use `Empty*_*` type if you don't need to custom some class
+
+- use `Empty*_*` type if you don't need to custom some class, see [Empty.h](include/UHEMesh/Empty.h) for more details.
+
+  > **example** 
+  >
+  > if you just need to custom vertex and polygon, so you can do like this
+  >
+  > ```c++
+  > class V;
+  > class P;
+  > using Traits_VP = HEMeshTriats_EmptyEH<V, P>;
+  > class V : public TVertex <Traits_VP> { /*...*/ }
+  > class P : public TPolygon<Traits_VP> { /*...*/ }
+  > 
+  > int main() {
+  >     std::vector<size_t> indices = {0,1,2,0,2,3};
+  >     HEMesh<Traits_VP> mesh(indices, 3);
+  >     // ...
+  > }
+  > ```
+
 - boundary polygon is `nullptr` or use `HEMesh<...>::P::IsBoundary(polygon)` to avoid literal value
 

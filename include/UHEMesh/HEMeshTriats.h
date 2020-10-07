@@ -25,7 +25,11 @@ namespace Ubpa {
 			return std::is_base_of_v<TVertex<HEMeshTriats>, V>
 				&& std::is_base_of_v<TEdge<HEMeshTriats>, E>
 				&& std::is_base_of_v<TPolygon<HEMeshTriats>, P>
-				&& std::is_base_of_v<THalfEdge<HEMeshTriats>, H>;
+				&& std::is_base_of_v<THalfEdge<HEMeshTriats>, H>
+				&& std::is_default_constructible_v<V>
+				&& std::is_default_constructible_v<E>
+				&& std::is_default_constructible_v<P>
+				&& std::is_default_constructible_v<H>;
 		}
 	};
 

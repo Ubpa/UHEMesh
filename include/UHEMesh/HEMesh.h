@@ -9,13 +9,13 @@ namespace Ubpa {
 	// nullptr Polygon is a boundary
 	template<typename Traits = HEMeshTriats_EmptyVEPH>
 	class HEMesh {
+		static_assert(Traits::IsValid());
+
 	public:
 		using V = HEMeshTriats_V<Traits>;
 		using E = HEMeshTriats_E<Traits>;
 		using P = HEMeshTriats_P<Traits>;
 		using H = HEMeshTriats_H<Traits>;
-
-		static_assert(Traits::IsValid());
 
 	public:
 		HEMesh() = default;
