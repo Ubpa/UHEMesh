@@ -60,9 +60,4 @@ namespace Ubpa {
 	class EmptyVEPH_E;
 	class EmptyVEPH_P;
 	class EmptyVEPH_H;
-
-	template<template<typename, typename...> class ContainerT, typename ElemT, typename... Args>
-	const ContainerT<const ElemT*> Const(const ContainerT<ElemT*, Args...>& container) {
-		return ContainerT<const ElemT*>(container.begin(), container.end());
-	}
 }

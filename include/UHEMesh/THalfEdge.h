@@ -5,7 +5,6 @@
 namespace Ubpa {
 	template<typename Traits>
 	class THalfEdge {
-		friend class HEMesh<Traits>;
 	public:
 		using V = HEMeshTriats_V<Traits>;
 		using E = HEMeshTriats_E<Traits>;
@@ -43,46 +42,40 @@ namespace Ubpa {
 		bool IsFree() const { return !polygon; }
 		bool IsBoundary() const { return !polygon; }
 
-		static H* const FindFreeIncident(H* begin, H* end);
-		static const H* const FindFreeIncident(const H* begin, const H* end) { return FindFreeIncident(const_cast<H*>(begin), const_cast<H*>(end)); }
-
 		static bool MakeAdjacent(H* inHE, H* outHE);
 
 		// [begin, end), if begin == end, return a loop
 		static const std::vector<H*> NextBetween(H* begin, H* end);
-		static const std::vector<const H*> NextBetween(const H* begin, const H* end) { return Const(NextBetween(const_cast<H*>(begin), const_cast<H*>(end))); }
 
 		// [this, end), NextBetween(this, end);
 		const std::vector<H*> NextTo(H* end) { return NextBetween(This(), end); }
-		const std::vector<const H*> NextTo(const H* end) const { return NextBetween(This(), end); }
 
 		// NextBetween(this, this), a loop from this to this
 		const std::vector<H*> NextLoop() { return NextTo(This()); }
-		const std::vector<const H*> NextLoop() const { return NextTo(This()); }
 
 		// [begin, end), if begin == end, return a loop
 		static const std::vector<H*> RotateNextBetween(H* begin, H* end);
-		static const std::vector<const H*> RotateNextBetween(const H* begin, const H* end) {
-			return Const(RotateNextBetween(const_cast<H*>(begin), const_cast<H*>(end))); }
 
 		// [this, end), RotateNextBetween(this, end);
 		const std::vector<H*> RotateNextTo(H* end) { return RotateNextBetween(This(), end); }
-		const std::vector<const H*> RotateNextTo(const H* end) const { return RotateNextBetween(This(), end); }
 
 		// RotateNextBetween(this, this), a loop from this to this
 		const std::vector<H*> RotateNextLoop() { return RotateNextTo(This()); }
-		const std::vector<const H*> RotateNextLoop() const { return RotateNextTo(This()); }
 
 	private:
+		friend class HEMesh<Traits>;
+
+		static H* const FindFreeIncident(H* begin, H* end);
+
 		H* This() noexcept { return static_cast<H*>(this); }
 		const H* This() const noexcept { return static_cast<const H*>(this); }
 
-		H* next = nullptr;
-		H* pair = nullptr;
+		H* next{ nullptr };
+		H* pair{ nullptr };
 
-		V* origin = nullptr;
-		E* edge = nullptr;
-		P* polygon = nullptr;
+		V* origin{ nullptr };
+		E* edge{ nullptr };
+		P* polygon{ nullptr };
 	};
 }
 

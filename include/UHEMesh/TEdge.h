@@ -5,7 +5,6 @@
 namespace Ubpa {
 	template<typename Traits>
 	class TEdge {
-		friend class HEMesh<Traits>;
 	public:
 		using V = HEMeshTriats_V<Traits>;
 		using E = HEMeshTriats_E<Traits>;
@@ -25,16 +24,15 @@ namespace Ubpa {
 		// + [he.RotateNext, he.RotateNext.RotateNext, ..., he)
 		// + [he.next, he.next.RotateNext, ..., he.pair)
 		const std::vector<H*> AdjOutHalfEdges();
-		const std::vector<const H*> AdjOutHalfEdges() const { return Const(const_cast<TEdge*>(this)->AdjOutHalfEdges()); }
 
 		const std::set<V*> AdjVertices();
-		const std::set<const V*> AdjVertices() const { return Const(const_cast<TEdge*>(this)->AdjVertices()); }
 
 		const std::vector<E*> AdjEdges();
-		const std::vector<const E*> AdjEdges() const { return Const(const_cast<TEdge*>(this)->AdjEdges()); }
 
 	private:
-		H* halfEdge = nullptr;
+		friend class HEMesh<Traits>;
+
+		H* halfEdge{ nullptr };
 	};
 }
 

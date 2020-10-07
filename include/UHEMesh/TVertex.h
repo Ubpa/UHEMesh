@@ -5,7 +5,6 @@
 namespace Ubpa {
 	template<typename Traits>
 	class TVertex {
-		friend class HEMesh<Traits>;
 	public:
 		using V = HEMeshTriats_V<Traits>;
 		using E = HEMeshTriats_E<Traits>;
@@ -20,22 +19,15 @@ namespace Ubpa {
 
 		bool IsIsolated() const { return !halfEdge; }
 		bool IsBoundary() const;
-		size_t Degree() const { return OutHalfEdges().size(); }
+		size_t Degree() const { return const_cast<TVertex*>(this)->OutHalfEdges().size(); }
 
 		const std::vector<H*> OutHalfEdges() { return IsIsolated() ? std::vector<H*>() : HalfEdge()->RotateNextLoop(); }
-		const std::vector<const H*> OutHalfEdges() const { return Const(const_cast<TVertex*>(this)->OutHalfEdges()); }
 
 		const std::vector<E*> AdjEdges();
-		const std::vector<const H*> AdjEdges() const { return Const(const_cast<TVertex*>(this)->AdjEdges()); }
 
 		const std::vector<V*> AdjVertices();
-		const std::vector<const V*> AdjVertices() const { return Const(const_cast<TVertex*>(this)->AdjVertices()); }
 
 		const std::set<P*> AdjPolygons();
-		const std::set<const P*> AdjPolygons() const { return Const(const_cast<TVertex*>(this)->AdjPolygons()); }
-
-		H* const FindFreeIncident();
-		const H* const FindFreeIncident() const { return const_cast<TVertex*>(this)->FindFreeIncident(); }
 
 		H* const HalfEdgeTo(V* end);
 		const H* const HalfEdgeTo(const V* end) const { return const_cast<TVertex*>(this)->HalfEdgeTo(const_cast<V*>(end)); }
@@ -53,7 +45,10 @@ namespace Ubpa {
 		static bool IsConnected(const V* v0, const V* v1) { return v0->IsConnectedWith(v1); }
 
 	private:
-		H* halfEdge = nullptr;
+		friend class HEMesh<Traits>;
+		H* const FindFreeIncident();
+
+		H* halfEdge{ nullptr };
 	};
 }
 
