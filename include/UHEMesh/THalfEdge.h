@@ -41,6 +41,7 @@ namespace Ubpa {
 		// p can be nullptr
 		void Init(H* next, H* pair, V* v, E* e, P* p) noexcept;
 
+		// polygon == nullptr
 		bool IsBoundary() const noexcept { return !polygon; }
 
 		// [begin, end), if begin == end, return a loop

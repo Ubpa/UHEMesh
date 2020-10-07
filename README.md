@@ -62,7 +62,7 @@ int main() {
 
   > **example** 
   >
-  > if you just need to custom vertex and polygon, so you can do like this
+  > if you just need to custom vertex and polygon, then you can do like this
   >
   > ```c++
   > class V;

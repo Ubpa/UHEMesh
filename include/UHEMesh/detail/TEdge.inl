@@ -15,8 +15,8 @@ namespace Ubpa {
 	template<typename Traits>
 	const std::set<HEMeshTriats_V<Traits>*> TEdge<Traits>::AdjVertices() {
 		std::set<V*> vertices;
-		for (auto e : OutHalfEdges())
-			vertices.insert(e->End());
+		for (auto he : OutHalfEdges())
+			vertices.insert(he->End());
 		return vertices;
 	}
 
