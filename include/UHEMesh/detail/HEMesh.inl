@@ -9,7 +9,7 @@
 namespace Ubpa {
 	template<typename Traits>
 	template<typename T, typename... Args>
-	T* const HEMesh<Traits>::New(Args&&... args) {
+	T* HEMesh<Traits>::New(Args&&... args) {
 		T* elem = MemVarOf<T>::pool(this).Request();
 		new (elem) T(std::forward<Args>(args)...);
 		MemVarOf<T>::set(this).insert(elem);
@@ -25,7 +25,8 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	const std::vector<size_t> HEMesh<Traits>::Indices(P* p) const {
+	std::vector<size_t> HEMesh<Traits>::Indices(P* p) const {
+		assert(p != nullptr);
 		std::vector<size_t> indices;
 		for (auto v : p->AdjVertices())
 			indices.push_back(Index(v));
@@ -34,17 +35,8 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_E<Traits>* const HEMesh<Traits>::AddEdge(V* v0, V* v1, Args&&... args) {
-		if (v0 == v1) {
-			printf("ERROR::HEMesh::AddEdge\n"
-				"\t""v0 == v1\n");
-			return nullptr;
-		}
-		if (V::IsConnected(v0, v1)) {
-			printf("ERROR::HEMesh::AddEdge\n"
-				"\t""v0 is already connected with v1\n");
-			return nullptr;
-		}
+	HEMeshTriats_E<Traits>* HEMesh<Traits>::AddEdge(V* v0, V* v1, Args&&... args) {
+		assert(v0 != nullptr && v1 != nullptr && v0 != v1 && !V::IsConnected(v0, v1));
 
 		auto e = New<E>(std::forward<Args>(args)...);
 
@@ -66,11 +58,8 @@ namespace Ubpa {
 		// [link he0]
 		if (!v0->IsIsolated()) {
 			auto inV0 = v0->FindFreeIncident();
-			if (inV0 == nullptr) {
-				printf("ERROR::HEMesh::AddEdge\n"
-					"\t""v0 hasn't free incident\n");
+			if (inV0 == nullptr)
 				return nullptr;
-			}
 			auto outV0 = inV0->Next();
 
 			inV0->SetNext(he0);
@@ -82,11 +71,8 @@ namespace Ubpa {
 		// [link he1]
 		if (!v1->IsIsolated()) {
 			auto inV1 = v1->FindFreeIncident();
-			if (inV1 == nullptr) {
-				printf("ERROR::HEMesh::AddEdge\n"
-					"\t""v1 hasn't free incident\n");
+			if (inV1 == nullptr)
 				return nullptr;
-			}
 			auto outV1 = inV1->Next();
 
 			inV1->SetNext(he1);
@@ -100,34 +86,22 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_P<Traits>* const HEMesh<Traits>::AddPolygon(const std::vector<H*> heLoop, Args&&... args) {
-		if (heLoop.size() == 0) {
-			printf("ERROR::HEMesh::AddPolygon:\n"
-				"\t""heLoop is empty\n");
-			return nullptr;
-		}
+	HEMeshTriats_P<Traits>* HEMesh<Traits>::AddPolygon(const std::vector<H*>& heLoop, Args&&... args) {
+		assert(!heLoop.empty() && "heLoop must be non-empty");
+#ifndef NDEBUG
 		for (size_t i = 0; i < heLoop.size(); i++) {
-			if (!heLoop[i]->IsFree()) {
-				printf("ERROR::HEMesh::AddPolygon:\n"
-					"\t""heLoop[%zd] isn't free\n", i);
-				return nullptr;
-			}
+			assert(heLoop[i] != nullptr);
+			assert(heLoop[i]->IsFree());
 			size_t next = (i + 1) % heLoop.size();
-			if (heLoop[i]->End() != heLoop[next]->Origin()) {
-				printf("ERROR::HEMesh::AddPolygon:\n"
-					"\t""heLoop[%zd]'s end isn't heLoop[%zd]'s origin\n", i, next);
-				return nullptr;
-			}
+			assert(heLoop[i]->End() == heLoop[next]->Origin());
 		}
+#endif // !NDEBUG
 
 		// reorder link
 		for (size_t i = 0; i < heLoop.size(); i++) {
 			size_t next = (i + 1) % heLoop.size();
-			if (!H::MakeAdjacent(heLoop[i], heLoop[next])) {
-				printf("ERROR::HEMesh::AddPolygon:\n"
-					"\t""the polygon would introduce a non-monifold condition\n");
-				return nullptr;
-			}
+			auto success = H::MakeAdjacent(heLoop[i], heLoop[next]);
+			assert(success && "the polygon would introduce a non - monifold condition");
 		}
 
 		// link polygon and heLoop
@@ -187,6 +161,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	void HEMesh<Traits>::RemoveVertex(V* v) {
+		assert(v != nullptr);
 		for (auto e : v->AdjEdges())
 			RemoveEdge(e);
 		Delete<V>(v);
@@ -194,22 +169,14 @@ namespace Ubpa {
 
 	template<typename Traits>
 	bool HEMesh<Traits>::Init(const std::vector<std::vector<size_t>>& polygons) {
+		assert(!polygons.empty());
+
 		Clear();
 
-		if (polygons.empty()) {
-			printf("WARNNING::HEMesh::Init\n"
-				"\t""polygons is empty\n");
-			return false;
-		}
-
 		size_t max = 0;
-		size_t min = SIZE_MAX;
+		size_t min = std::numeric_limits<size_t>::max();
 		for (const auto& polygon : polygons) {
-			if (polygon.size() <= 2) {
-				printf("ERROR::HEMesh::Init\n"
-					"\t""polygon's size <= 2\n");
-				return false;
-			}
+			assert(polygon.size() > 2);
 
 			for (auto idx : polygon) {
 				if (idx > max)
@@ -219,11 +186,7 @@ namespace Ubpa {
 			}
 		}
 
-		if (min != 0) {
-			printf("ERROR::HEMesh::Init\n"
-				"\t""min idx != 0\n");
-			return false;
-		}
+		assert(min == 0);
 
 		for (size_t i = 0; i <= max; i++)
 			New<V>();
@@ -232,11 +195,7 @@ namespace Ubpa {
 			std::vector<H*> heLoop;
 			for (size_t i = 0; i < polygon.size(); i++) {
 				size_t next = (i + 1) % polygon.size();
-				if (polygon[i] == polygon[next]) {
-					printf("WARNNING::HEMesh::Init\n"
-						"\t""same idx (%zd)\n", polygon[i]);
-					continue;
-				}
+				assert(polygon[i] != polygon[next]);
 				auto u = vertices[polygon[i]];
 				auto v = vertices[polygon[next]];
 				auto he = u->HalfEdgeTo(v);
@@ -245,14 +204,7 @@ namespace Ubpa {
 				heLoop.push_back(he);
 			}
 			auto p = AddPolygon(heLoop);
-
-			if (p == nullptr) {
-				std::string polygonStr;
-				for (auto idx : polygon)
-					polygonStr += std::to_string(idx) + ", ";
-				printf("WARNNING::HEMesh::Init\n"
-					"\t""AddPolygon fail (%s)\n", polygonStr.c_str());
-			}
+			assert(p != nullptr);
 		}
 
 		return true;
@@ -260,10 +212,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	bool HEMesh<Traits>::Init(const std::vector<size_t>& polygons, size_t sides) {
-		if (polygons.size() % sides != 0) {
-			printf("ERROR::HEMesh::Init:\n"
-				"\t""polygons.size() isn't an integer multiple of sides\n");
-		}
+		assert(polygons.size() % sides == 0);
 		std::vector<std::vector<size_t>> arrangedPolygons;
 		for (size_t i = 0; i < polygons.size(); i += sides) {
 			arrangedPolygons.emplace_back();
@@ -274,7 +223,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	const std::vector<std::vector<size_t>> HEMesh<Traits>::Export() const {
+	std::vector<std::vector<size_t>> HEMesh<Traits>::Export() const {
 		std::vector<std::vector<size_t>> arrangedPolygons;
 		if (!IsValid())
 			return arrangedPolygons;
@@ -355,7 +304,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	const std::vector<std::vector<HEMeshTriats_H<Traits>*>> HEMesh<Traits>::Boundaries() {
+	std::vector<std::vector<HEMeshTriats_H<Traits>*>> HEMesh<Traits>::Boundaries() {
 		std::vector<std::vector<H*>> boundaries;
 		std::set<H*> found;
 		for (auto he : halfEdges) {
@@ -457,7 +406,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_V<Traits>* const HEMesh<Traits>::AddEdgeVertex(E* e, Args&&... args) {
+	HEMeshTriats_V<Traits>* HEMesh<Traits>::AddEdgeVertex(E* e, Args&&... args) {
 		// prepare
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
@@ -563,33 +512,17 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_E<Traits>* const HEMesh<Traits>::ConnectVertex(H* he0, H* he1, Args&&... args) {
-		auto p = he0->Polygon();
-		if (p != he1->Polygon()) {
-			printf("ERROR::HEMesh::ConnectVertex:\n"
-				"\t""he0->Polygon != he1->Polygon\n");
-			return nullptr;
-		}
+	HEMeshTriats_E<Traits>* HEMesh<Traits>::ConnectVertex(H* he0, H* he1, Args&&... args) {
+		assert(he0->Polygon() == he1->Polygon());
 
-		if (P::IsBoundary(p)) {
-			printf("ERROR::HEMesh::ConnectVertex:\n"
-				"\t""halfedge's polygon is boundary\n");
-			return nullptr;
-		}
+		auto p = he0->Polygon();
+
+		assert(!P::IsBoundary(p));
 
 		auto v0 = he0->Origin();
 		auto v1 = he1->Origin();
-		if (v0 == v1) {
-			printf("ERROR::HEMesh::ConnectVertex:\n"
-				"\t""he0->Origin == he1->Origin\n");
-			return nullptr;
-		}
 
-		if (V::IsConnected(v0, v1)) {
-			printf("ERROR::HEMesh::ConnectVertex:\n"
-				"\t""v0 and v1 is already connected\n");
-			return nullptr;
-		}
+		assert(v0 != v1 && !V::IsConnected(v0, v1));
 
 		RemovePolygon(p);
 
@@ -629,11 +562,8 @@ namespace Ubpa {
 
 	template<typename Traits>
 	bool HEMesh<Traits>::FlipEdge(E* e) {
-		if (e->IsBoundary()) {
-			printf("ERROR::HEMesh::FlipEdge:\n"
-				"\t""e is boundary\n");
-			return false;
-		}
+		assert(e != nullptr && !e->IsBoundary());
+
 		// 1. prepare
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
@@ -688,15 +618,14 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_V<Traits>* const HEMesh<Traits>::SplitEdge(E* e, Args&&... args) {
+	HEMeshTriats_V<Traits>* HEMesh<Traits>::SplitEdge(E* e, Args&&... args) {
+		assert(e != nullptr);
+
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
 
-		if (he01->IsBoundary() && he10->IsBoundary()) {
-			printf("ERROR::HEMesh::SplitEdge:\n"
-				"\t""two side of edge are boundaries\n");
-			return nullptr;
-		}
+		assert((!he01->IsBoundary() || !he10->IsBoundary())
+			&& "two side of edge are boundaries");
 
 		if (he01->IsBoundary() || he10->IsBoundary()) {
 			if (he01->IsBoundary())
@@ -704,11 +633,7 @@ namespace Ubpa {
 
 			auto p01 = he01->Polygon();
 
-			if (p01->Degree() != 3) {
-				printf("ERROR::HEMesh::SplitEdge:\n"
-					"\t""polygon's degree %zd is not 3\n", p01->Degree());
-				return nullptr;
-			}
+			assert(p01->Degree() == 3);
 
 			/*
 			*     v1         v1
@@ -770,13 +695,7 @@ namespace Ubpa {
 		auto p01 = he01->Polygon();
 		auto p10 = he10->Polygon();
 
-		if (p01->Degree() != 3 || p10->Degree() != 3)
-		{
-			printf("ERROR::HEMesh::SplitEdge:\n"
-				"\t""polygon's degree (%zd, %zd) is not 3\n",
-				p01->Degree(), p10->Degree());
-			return nullptr;
-		}
+		assert(p01->Degree() == 3 && p10->Degree() == 3);
 
 		/*
 		*     v1             v1
@@ -852,6 +771,8 @@ namespace Ubpa {
 
 	template<typename Traits>
 	bool HEMesh<Traits>::IsCollapsable(E* e) const {
+		assert(e != nullptr);
+
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
 
@@ -885,7 +806,9 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_V<Traits>* const HEMesh<Traits>::CollapseEdge(E* e, Args&&... args) {
+	HEMeshTriats_V<Traits>* HEMesh<Traits>::CollapseEdge(E* e, Args&&... args) {
+		assert(IsCollapsable(e) && "use IsCollapsable before CollapseEdge");
+
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
 
@@ -897,28 +820,6 @@ namespace Ubpa {
 		size_t p01D = he01->NextLoop().size();
 		size_t p10D = he10->NextLoop().size();
 
-		std::vector<V*> comVs;
-		auto v0AdjVs = v0->AdjVertices();
-		auto v1AdjVs = v1->AdjVertices();
-		sort(v0AdjVs.begin(), v0AdjVs.end());
-		sort(v1AdjVs.begin(), v1AdjVs.end());
-		std::set_intersection(v0AdjVs.begin(), v0AdjVs.end(), v1AdjVs.begin(), v1AdjVs.end(),
-			std::insert_iterator<std::vector<V*>>(comVs, comVs.begin()));
-
-		size_t limit = 2;
-		if (p01D > 3)
-			limit -= 1;
-		if (p10D > 3)
-			limit -= 1;
-		if (comVs.size() > limit)
-		{
-#if !NDEBUG
-			printf("WARNNING::HEMesh::CollapseEdge:\n"
-				"\t""|N(v0) กษ N(v1)| (%zd)> %zd\n", comVs.size(), limit);
-#endif
-			return nullptr;
-		}
-
 		if (v0->IsBoundary() && v1->IsBoundary() && !e->IsBoundary())
 			return nullptr;
 
@@ -926,6 +827,7 @@ namespace Ubpa {
 			EraseVertex(v0);
 			return v1;
 		}
+
 		if (v1->Degree() == 1) {
 			EraseVertex(v1);
 			return v0;

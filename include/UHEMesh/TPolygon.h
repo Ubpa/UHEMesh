@@ -12,8 +12,8 @@ namespace Ubpa {
 		using H = HEMeshTriats_H<Traits>;
 
 	public:
-		H* const HalfEdge() noexcept { return halfEdge; }
-		const H* const HalfEdge() const noexcept { return const_cast<TPolygon*>(this)->HalfEdge(); }
+		H* HalfEdge() noexcept { return halfEdge; }
+		const H* HalfEdge() const noexcept { return const_cast<TPolygon*>(this)->HalfEdge(); }
 
 		void SetHalfEdge(H* he) noexcept { halfEdge = he; }
 
@@ -24,18 +24,18 @@ namespace Ubpa {
 		size_t Degree() const noexcept;
 
 		// halfedges : [ he, he.Next(), he.Next().Next(), ..., he)
-		const std::vector<H*> AdjHalfEdges() { return HalfEdge()->NextLoop(); }
+		std::vector<H*> AdjHalfEdges() { return HalfEdge()->NextLoop(); }
 
 		// edges : { halfedge.Edge() for halfedge in AdjHalfEdges() }
-		const std::vector<E*> AdjEdges();
+		std::vector<E*> AdjEdges();
 
 		// vertices : { halfedge.Origin() for halfedge in AdjHalfEdges() }
-		const std::vector<V*> AdjVertices();
+		std::vector<V*> AdjVertices();
 
 		// adjacent polygons : { halfedge.Pair().Polygon() for halfedge in AdjHalfEdges() }
 		// maybe contains boundary polygon (nullptr)
 		// use IsBoundary() to find it
-		const std::vector<P*> AdjPolygons();
+		std::vector<P*> AdjPolygons();
 
 	private:
 		friend HEMesh<Traits>;

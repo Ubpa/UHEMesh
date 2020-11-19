@@ -293,9 +293,7 @@ int main() {
 			mesh->Vertices().at(i)->name = "v" + to_string(i);
 		Print(mesh);
 		auto e = V::EdgeBetween(mesh->Vertices().at(6), mesh->Vertices().at(8));
-		auto v = mesh->CollapseEdge(e);
-		if (v != nullptr) // v should be nullptr
-			printf("v should be nullptr\n");
+		assert(!mesh->IsCollapsable(e));
 		Print(mesh);
 	}
 

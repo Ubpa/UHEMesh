@@ -2,7 +2,7 @@
 
 namespace Ubpa {
 	template<typename Traits>
-	HEMeshTriats_H<Traits>* const THalfEdge<Traits>::Pre() noexcept {
+	HEMeshTriats_H<Traits>* THalfEdge<Traits>::Pre() noexcept {
 		auto he = this;
 		auto next = he->Next();
 		do {
@@ -23,7 +23,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	HEMeshTriats_H<Traits>* const THalfEdge<Traits>::FindFreeIncident(H* begin, H* end) {
+	HEMeshTriats_H<Traits>* THalfEdge<Traits>::FindFreeIncident(H* begin, H* end) {
 		assert(begin->End() == end->End());
 
 		for (auto he = begin; he != end; he = he->Next()->Pair()) {
@@ -57,7 +57,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	const std::vector<HEMeshTriats_H<Traits>*> THalfEdge<Traits>::NextBetween(H* begin, H* end) {
+	std::vector<HEMeshTriats_H<Traits>*> THalfEdge<Traits>::NextBetween(H* begin, H* end) {
 		std::vector<H*> hes;
 		auto he = begin;
 		do {
@@ -68,7 +68,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	const std::vector<HEMeshTriats_H<Traits>*> THalfEdge<Traits>::RotateNextBetween(H* begin, H* end) {
+	std::vector<HEMeshTriats_H<Traits>*> THalfEdge<Traits>::RotateNextBetween(H* begin, H* end) {
 		std::vector<H*> hes;
 		auto he = begin;
 		do {
