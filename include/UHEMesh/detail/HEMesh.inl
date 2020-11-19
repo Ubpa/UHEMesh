@@ -35,7 +35,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_E<Traits>* HEMesh<Traits>::AddEdge(V* v0, V* v1, Args&&... args) {
+	HEMeshTraits_E<Traits>* HEMesh<Traits>::AddEdge(V* v0, V* v1, Args&&... args) {
 		assert(v0 != nullptr && v1 != nullptr && v0 != v1 && !V::IsConnected(v0, v1));
 
 		auto e = New<E>(std::forward<Args>(args)...);
@@ -86,7 +86,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_P<Traits>* HEMesh<Traits>::AddPolygon(const std::vector<H*>& heLoop, Args&&... args) {
+	HEMeshTraits_P<Traits>* HEMesh<Traits>::AddPolygon(const std::vector<H*>& heLoop, Args&&... args) {
 		assert(!heLoop.empty() && "heLoop must be non-empty");
 #ifndef NDEBUG
 		for (size_t i = 0; i < heLoop.size(); i++) {
@@ -304,7 +304,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	std::vector<std::vector<HEMeshTriats_H<Traits>*>> HEMesh<Traits>::Boundaries() {
+	std::vector<std::vector<HEMeshTraits_H<Traits>*>> HEMesh<Traits>::Boundaries() {
 		std::vector<std::vector<H*>> boundaries;
 		std::set<H*> found;
 		for (auto he : halfEdges) {
@@ -384,7 +384,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	const HEMeshTriats_P<Traits>* HEMesh<Traits>::EraseVertex(V* v) {
+	const HEMeshTraits_P<Traits>* HEMesh<Traits>::EraseVertex(V* v) {
 		if (v->IsBoundary()) {
 			RemoveVertex(v);
 			return nullptr;
@@ -406,7 +406,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_V<Traits>* HEMesh<Traits>::AddEdgeVertex(E* e, Args&&... args) {
+	HEMeshTraits_V<Traits>* HEMesh<Traits>::AddEdgeVertex(E* e, Args&&... args) {
 		// prepare
 		auto he01 = e->HalfEdge();
 		auto he10 = he01->Pair();
@@ -512,7 +512,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_E<Traits>* HEMesh<Traits>::ConnectVertex(H* he0, H* he1, Args&&... args) {
+	HEMeshTraits_E<Traits>* HEMesh<Traits>::ConnectVertex(H* he0, H* he1, Args&&... args) {
 		assert(he0->Polygon() == he1->Polygon());
 
 		auto p = he0->Polygon();
@@ -618,7 +618,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_V<Traits>* HEMesh<Traits>::SplitEdge(E* e, Args&&... args) {
+	HEMeshTraits_V<Traits>* HEMesh<Traits>::SplitEdge(E* e, Args&&... args) {
 		assert(e != nullptr);
 
 		auto he01 = e->HalfEdge();
@@ -806,7 +806,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	template<typename... Args>
-	HEMeshTriats_V<Traits>* HEMesh<Traits>::CollapseEdge(E* e, Args&&... args) {
+	HEMeshTraits_V<Traits>* HEMesh<Traits>::CollapseEdge(E* e, Args&&... args) {
 		assert(IsCollapsable(e) && "use IsCollapsable before CollapseEdge");
 
 		auto he01 = e->HalfEdge();

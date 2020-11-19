@@ -14,18 +14,18 @@ namespace Ubpa {
 	class HEMesh;
 
 	template<typename V_, typename E_, typename P_, typename H_>
-	struct HEMeshTriats {
+	struct HEMeshTraits {
 		using V = V_;
 		using E = E_;
 		using P = P_;
 		using H = H_;
-		using Mesh = HEMesh<HEMeshTriats>;
+		using Mesh = HEMesh<HEMeshTraits>;
 
 		static constexpr bool IsValid() noexcept {
-			return std::is_base_of_v<TVertex<HEMeshTriats>, V>
-				&& std::is_base_of_v<TEdge<HEMeshTriats>, E>
-				&& std::is_base_of_v<TPolygon<HEMeshTriats>, P>
-				&& std::is_base_of_v<THalfEdge<HEMeshTriats>, H>
+			return std::is_base_of_v<TVertex<HEMeshTraits>, V>
+				&& std::is_base_of_v<TEdge<HEMeshTraits>, E>
+				&& std::is_base_of_v<TPolygon<HEMeshTraits>, P>
+				&& std::is_base_of_v<THalfEdge<HEMeshTraits>, H>
 				&& std::is_default_constructible_v<V>
 				&& std::is_default_constructible_v<E>
 				&& std::is_default_constructible_v<P>
@@ -34,17 +34,17 @@ namespace Ubpa {
 	};
 
 	template<typename Traits>
-	using HEMeshTriats_V = typename Traits::V;
+	using HEMeshTraits_V = typename Traits::V;
 
 	template<typename Traits>
-	using HEMeshTriats_E = typename Traits::E;
+	using HEMeshTraits_E = typename Traits::E;
 
 	template<typename Traits>
-	using HEMeshTriats_P = typename Traits::P;
+	using HEMeshTraits_P = typename Traits::P;
 
 	template<typename Traits>
-	using HEMeshTriats_H = typename Traits::H;
+	using HEMeshTraits_H = typename Traits::H;
 
 	template<typename Traits>
-	using HEMeshTriats_Mesh = typename Traits::Mesh;
+	using HEMeshTraits_Mesh = typename Traits::Mesh;
 }

@@ -6,10 +6,10 @@ namespace Ubpa {
 	template<typename Traits>
 	class TEdge {
 	public:
-		using V = HEMeshTriats_V<Traits>;
-		using E = HEMeshTriats_E<Traits>;
-		using P = HEMeshTriats_P<Traits>;
-		using H = HEMeshTriats_H<Traits>;
+		using V = HEMeshTraits_V<Traits>;
+		using E = HEMeshTraits_E<Traits>;
+		using P = HEMeshTraits_P<Traits>;
+		using H = HEMeshTraits_H<Traits>;
 
 	public:
 		H* HalfEdge() noexcept { return halfEdge; }

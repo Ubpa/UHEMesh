@@ -6,10 +6,10 @@
 
 #include <cassert>
 
-#include "../HEMeshTriats.h"
+#include "../HEMeshTraits.h"
 
 namespace Ubpa {
-	template<typename V, typename E, typename P, typename H> struct HEMeshTriats;
+	template<typename V, typename E, typename P, typename H> struct HEMeshTraits;
 
 	template<typename Traits> class THalfEdge;
 	template<typename Traits> class TVertex;
