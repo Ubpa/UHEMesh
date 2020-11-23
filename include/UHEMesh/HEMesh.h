@@ -6,7 +6,20 @@
 #include <UContainer/Pool.h>
 
 namespace Ubpa {
-	// nullptr Polygon is a boundary
+	// [ example ]
+	// // forward declaration
+	// class V;
+	// class E;
+	// class P;
+	// class H;
+	// using Traits_VEPH = HEMeshTraits<V, E, P, H>;
+	// // custom vertex, edge, polygon and half-edge class
+	// class V : public TVertex  <Traits_VEPH> { /*...*/ }
+	// class E : public TEdge    <Traits_VEPH> { /*...*/ }
+	// class P : public TPolygon <Traits_VEPH> { /*...*/ }
+	// class H : public THalfEdge<Traits_VEPH> { /*...*/ }
+	// ...
+	// HEMesh<Traits_VEPH> mesh({0,1,2,0,2,3}, 3);
 	template<typename Traits = HEMeshTraits_EmptyVEPH>
 	class HEMesh {
 		static_assert(Traits::IsValid());
@@ -17,52 +30,96 @@ namespace Ubpa {
 		using P = HEMeshTraits_P<Traits>;
 		using H = HEMeshTraits_H<Traits>;
 
-	public:
+		//
+		// Constructors
+		/////////////////
+
 		HEMesh() = default;
 		HEMesh(const std::vector<std::vector<size_t>>& polygons) { Init(polygons); }
 		HEMesh(const std::vector<size_t>& polygons, size_t sides) { Init(polygons, sides); }
 
-	public:
+		// minimal index is 0
+		// [example]
+		// polygons: {
+		//    {0,1,2},
+		//    {3,4,5,6}
+		// }
+		bool Init(const std::vector<std::vector<size_t>>& polygons);
+
+		// minimal index is 0
+		// [example]
+		// polygons: { 0,1,3,2,3,1 }
+		// sides : 3
+		bool Init(const std::vector<size_t>& polygons, size_t sides);
+
+		// export all polygons' vertices-indices
+		std::vector<std::vector<size_t>> Export() const;
+
+		// a halfedge mesh is valid if
+		// - every halfedge has next, pair, origin and edge
+		// - all halfedges form some circles
+		// - every halfedge's pair-pair is itself
+		// - every vertice's out-halfedges-origin is itself
+		// - every edge has halfege, and it's two halfedge-edge is itself
+		// - every polygon has halfege, and it's all halfedge-polygon is itself
+		bool IsValid() const;
+
+		// IsValid() and every polygon's degree is 3
+		bool IsTriMesh() const;
+
+		//
+		// Element Access
+		///////////////////
+
 		const std::vector<V*>& Vertices() noexcept { return vertices.vec(); }
 		const std::vector<E*>& Edges() noexcept { return edges.vec(); }
 		const std::vector<P*>& Polygons() noexcept { return polygons.vec(); }
 		const std::vector<H*>& HalfEdges() noexcept { return halfEdges.vec(); }
-		/*
-		* ordered boundary == std::vector<H*>
-		* boundaries == std::vector<ordered boundary>
-		* there maybe several boundaries in a mesh
-		*/
-		std::vector<std::vector<H*>> Boundaries();
 
-		size_t NumVertices() const noexcept { return vertices.size(); }
-		size_t NumEdges() const noexcept { return edges.size(); }
-		size_t NumPolygons() const noexcept { return polygons.size(); }
-		size_t NumHalfEdges() const noexcept { return halfEdges.size(); }
-		size_t NumBoundaries() const noexcept { return const_cast<HEMesh*>(this)->Boundaries().size(); }
+		// every halfedge in the result represents a boundary
+		// you can use HalfEdge::NextLoop() to get the boundary's all halfedges
+		std::vector<H*> Boundaries() const;
 
+		// faster than Boundaries().size() > 0
+		bool HasBoundary() const noexcept;
+
+		//
+		// Index
+		//////////
+		// 
+		// - every vertex, edge, polygon and halfedge have an unique index in [0, size)
+		// - if mesh's topology change, previous indices is invalid
+		// - After initialization, vertices and polygons' indices are same with input
+		// 
+
+		size_t Index(const V* v) const { return vertices.idx(const_cast<V*>(v)); }
+		size_t Index(const E* e) const { return edges.idx(const_cast<E*>(e)); }
+		size_t Index(const P* p) const { return polygons.idx(const_cast<P*>(p)); }
+		size_t Index(const H* h) const { return halfEdges.idx(const_cast<H*>(h)); }
+
+		// get the polygon's vertices-index
 		// index is useless after changing the topology
-		size_t Index(V* v) const { return vertices.idx(v); }
-		size_t Index(E* e) const { return edges.idx(e); }
-		size_t Index(P* p) const { return polygons.idx(p); }
 		std::vector<size_t> Indices(P* p) const;
 
-		bool IsValid() const;
-		bool IsTriMesh() const;
+		//
+		// Capacity
+		/////////////
+
 		// vertices empty => halfedges, edges and polygons empty
 		bool IsEmpty() const noexcept { return vertices.empty(); }
-		bool HaveIsolatedVertices() const noexcept;
-		bool HaveBoundary() const noexcept;
 
-		// min is 0
-		bool Init(const std::vector<std::vector<size_t>>& polygons);
-		bool Init(const std::vector<size_t>& polygons, size_t sides);
 		void Clear() noexcept;
-		void Reserve(size_t n);
-		std::vector<std::vector<size_t>> Export() const;
 
-		// -----------------
-		//  basic mesh edit
-		// -----------------
+		// reserve
+		// -  n vertices
+		// - 2n polygons
+		// - 3n edges
+		// - 6n halfedges
+		void Reserve(size_t n);
+
+		//
+		// Basic Mesh Editting
+		////////////////////////
 
 		template<typename... Args>
 		V* AddVertex(Args&&... args) { return New<V>(std::forward<Args>(args)...); }
@@ -72,13 +129,14 @@ namespace Ubpa {
 		// polygon's halfedge is heLoop[0]
 		template<typename... Args>
 		P* AddPolygon(const std::vector<H*>& heLoop, Args&&... args);
+
 		void RemovePolygon(P* polygon);
 		void RemoveEdge(E* e);
 		void RemoveVertex(V* v);
 
-		// ----------------------
-		//  high-level mesh edit
-		// ----------------------
+		//
+		// High-Level Mesh Editting
+		/////////////////////////////
 
 		// RemoveVertex and AddPolygon
 		const P* EraseVertex(V* v);
@@ -102,7 +160,8 @@ namespace Ubpa {
 		V* SplitEdge(E* e, Args&&... args);
 
 		bool IsCollapsable(E* e) const;
-		// won't collapse in unsafe situation, return nullptr
+
+		// call IsCollapsable(E* e) firstly
 		template<typename... Args>
 		V* CollapseEdge(E* e, Args&&... args);
 
@@ -110,6 +169,7 @@ namespace Ubpa {
 		template<typename T> struct MemVarOf;
 		template<typename T>
 		friend struct MemVarOf;
+
 		// new and insert
 		template<typename T, typename... Args>
 		T* New(Args&&... args);

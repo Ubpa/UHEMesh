@@ -2,14 +2,14 @@
 
 namespace Ubpa {
 	template<typename Traits>
-	bool TVertex<Traits>::IsBoundary() const noexcept {
+	bool TVertex<Traits>::IsOnBoundary() const noexcept {
 		if (IsIsolated())
 			return true;
 
-		auto begin = HalfEdge();
-		auto he = begin;
+		auto* begin = HalfEdge();
+		auto* he = begin;
 		do {
-			if (he->IsBoundary())
+			if (he->IsOnBoundary())
 				return true;
 			he = he->RotateNext();
 		} while (he != begin);
@@ -22,8 +22,8 @@ namespace Ubpa {
 		if (IsIsolated())
 			return 0;
 
-		auto begin = HalfEdge();
-		auto he = begin;
+		auto* begin = HalfEdge();
+		auto* he = begin;
 		size_t degree = 0;
 		do {
 			++degree;
@@ -36,7 +36,7 @@ namespace Ubpa {
 	template<typename Traits>
 	std::vector<HEMeshTraits_E<Traits>*> TVertex<Traits>::AdjEdges() {
 		std::vector<E*> edges;
-		for (auto he : OutHalfEdges())
+		for (auto* he : OutHalfEdges())
 			edges.push_back(he->Edge());
 		return edges;
 	}
@@ -44,7 +44,7 @@ namespace Ubpa {
 	template<typename Traits>
 	std::vector<HEMeshTraits_V<Traits>*> TVertex<Traits>::AdjVertices() {
 		std::vector<V*> adjVs;
-		for (auto he : OutHalfEdges())
+		for (auto* he : OutHalfEdges())
 			adjVs.push_back(he->End());
 		return adjVs;
 	}
@@ -52,7 +52,7 @@ namespace Ubpa {
 	template<typename Traits>
 	std::set<HEMeshTraits_P<Traits>*> TVertex<Traits>::AdjPolygons() {
 		std::set<P*> adjPs;
-		for (auto he : OutHalfEdges())
+		for (auto* he : OutHalfEdges())
 			adjPs.insert(he->Polygon());
 		return adjPs;
 	}
@@ -62,8 +62,8 @@ namespace Ubpa {
 		if (IsIsolated())
 			return nullptr;
 
-		auto begin = HalfEdge()->Pair();
-		auto he = begin;
+		auto* begin = HalfEdge()->Pair();
+		auto* he = begin;
 		do {
 			if (he->IsFree())
 				return he;
@@ -78,8 +78,8 @@ namespace Ubpa {
 		if (IsIsolated())
 			return nullptr;
 
-		auto begin = HalfEdge();
-		auto he = begin;
+		auto* begin = HalfEdge();
+		auto* he = begin;
 		do {
 			if (he->End() == end)
 				return he;
@@ -91,7 +91,7 @@ namespace Ubpa {
 
 	template<typename Traits>
 	HEMeshTraits_E<Traits>* TVertex<Traits>::EdgeWith(V* v) noexcept {
-		auto he = HalfEdgeTo(v);
+		auto* he = HalfEdgeTo(v);
 		if (!he)
 			return nullptr;
 

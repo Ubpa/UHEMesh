@@ -17,8 +17,8 @@ namespace Ubpa {
 
 		void SetHalfEdge(H* he) noexcept { halfEdge = he; }
 
-		// edge is boundary == any halfedge is boundary
-		bool IsBoundary() const noexcept { return HalfEdge()->IsBoundary() || HalfEdge()->Pair()->IsBoundary(); }
+		// edge is on boundary == any halfedge is on boundary
+		bool IsOnBoundary() const noexcept { return HalfEdge()->IsOnBoundary() || HalfEdge()->Pair()->IsOnBoundary(); }
 
 		// clockwise
 		// + [he.RotateNext, he.RotateNext.RotateNext, ..., he)

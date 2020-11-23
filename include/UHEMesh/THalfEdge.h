@@ -37,12 +37,13 @@ namespace Ubpa {
 		void SetOrigin(V* v) noexcept { origin = v; }
 		void SetEdge(E* e) noexcept { edge = e; }
 		void SetPolygon(P* p) noexcept { polygon = p; }
+
 		// next, pair, v, e can't be nullptr
 		// p can be nullptr
 		void Init(H* next, H* pair, V* v, E* e, P* p) noexcept;
 
 		// polygon == nullptr
-		bool IsBoundary() const noexcept { return !polygon; }
+		bool IsOnBoundary() const noexcept { return !polygon; }
 
 		// [begin, end), if begin == end, return a loop
 		static std::vector<H*> NextBetween(H* begin, H* end);

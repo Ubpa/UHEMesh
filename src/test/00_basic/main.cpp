@@ -32,7 +32,7 @@ public:
 public:
 	const string Name() const {
 		string name = "[" + pre + "]";
-		auto he = HalfEdge();
+		auto* he = HalfEdge();
 		name += he->Origin()->name;
 		do {
 			name += "-" + he->End()->name;
@@ -57,27 +57,28 @@ ostream& operator<< (ostream& os, HEMesh<TraitsVEP>::H * he) {
 void Print(shared_ptr<HEMesh<TraitsVEP>> mesh) {
 	cout << (mesh->IsValid() ? "[valid]" : "[not valid]") << endl;
 	cout << " V:" << mesh->Vertices().size() << endl;
-	for (auto v : mesh->Vertices())
+	for (auto* v : mesh->Vertices())
 		cout << "    " << v->name << endl;
 
 	cout << "HE:" << mesh->HalfEdges().size() << endl;
-	for (auto he : mesh->HalfEdges())
+	for (auto* he : mesh->HalfEdges())
 		cout << "    " << he << endl;
 
 	cout << " E:" << mesh->Edges().size() << endl;
-	for (auto e : mesh->Edges())
+	for (auto* e : mesh->Edges())
 		cout << "    " << e->Name() << endl;
 
 	cout << " P:" << mesh->Polygons().size() << endl << endl;
-	for (auto p : mesh->Polygons())
+	for (auto* p : mesh->Polygons())
 		cout << "    " << p->Name() << endl;
 
-	cout << " B:" << mesh->NumBoundaries() << endl;
-	for (auto b : mesh->Boundaries()) {
+	cout << " B:" << mesh->Boundaries().size() << endl;
+	for (auto* b : mesh->Boundaries()) {
 		cout << "    ";
-		for (auto he : b)
+
+		for (auto* he : b->NextLoop())
 			cout << he->Origin() << "-";
-		cout << b.back()->End() << endl;
+		cout << b->Origin() << endl;
 	}
 	cout << endl;
 }
@@ -93,22 +94,22 @@ int main() {
 		auto mesh = make_shared<HEMesh<TraitsVEP>>();
 		cout << "add v0, v1, v2" << endl;
 
-		auto v0 = mesh->AddVertex("v0");
-		auto v1 = mesh->AddVertex("v1");
-		auto v2 = mesh->AddVertex("v2");
+		auto* v0 = mesh->AddVertex("v0");
+		auto* v1 = mesh->AddVertex("v1");
+		auto* v2 = mesh->AddVertex("v2");
 		Print(mesh);
 		cout << "add e01, e12, e21" << endl;
-		auto e01 = mesh->AddEdge(v0, v1, "E0");
-		auto e12 = mesh->AddEdge(v1, v2, "E1");
-		auto e20 = mesh->AddEdge(v2, v0, "E2");
+		auto* e01 = mesh->AddEdge(v0, v1, "E0");
+		auto* e12 = mesh->AddEdge(v1, v2, "E1");
+		auto* e20 = mesh->AddEdge(v2, v0, "E2");
 		Print(mesh);
 
 		cout << "add p0" << endl;
-		auto p0 = mesh->AddPolygon({ e01->HalfEdge(),e12->HalfEdge(),e20->HalfEdge() }, "P0");
+		auto* p0 = mesh->AddPolygon({ e01->HalfEdge(),e12->HalfEdge(),e20->HalfEdge() }, "P0");
 		Print(mesh);
 
-		cout << e01->Name() << " is " << (e01->IsBoundary() ? "" : "not ") << "a boundary" << endl;
-		cout << v0->name << " is " << (v0->IsBoundary() ? "" : "not ") << "a boundary" << endl;
+		cout << e01->Name() << " is " << (e01->IsOnBoundary() ? "" : "not ") << "a boundary" << endl;
+		cout << v0->name << " is " << (v0->IsOnBoundary() ? "" : "not ") << "a boundary" << endl;
 		cout << "remove p0" << endl;
 		mesh->RemovePolygon(p0);
 		Print(mesh);
@@ -131,29 +132,29 @@ int main() {
 
 		auto mesh = make_shared<HEMesh<TraitsVEP>>();
 
-		auto v0 = mesh->AddVertex("v0");
-		auto v1 = mesh->AddVertex("v1");
-		auto v2 = mesh->AddVertex("v2");
-		auto v3 = mesh->AddVertex("v3");
+		auto* v0 = mesh->AddVertex("v0");
+		auto* v1 = mesh->AddVertex("v1");
+		auto* v2 = mesh->AddVertex("v2");
+		auto* v3 = mesh->AddVertex("v3");
 
-		auto e01 = mesh->AddEdge(v0, v1, "E0");
-		auto e12 = mesh->AddEdge(v1, v2, "E1");
-		auto e02 = mesh->AddEdge(v0, v2, "E2");
-		auto e23 = mesh->AddEdge(v2, v3, "E3");
-		auto e30 = mesh->AddEdge(v3, v0, "E4");
+		auto* e01 = mesh->AddEdge(v0, v1, "E0");
+		auto* e12 = mesh->AddEdge(v1, v2, "E1");
+		auto* e02 = mesh->AddEdge(v0, v2, "E2");
+		auto* e23 = mesh->AddEdge(v2, v3, "E3");
+		auto* e30 = mesh->AddEdge(v3, v0, "E4");
 
-		auto he01 = e01->HalfEdge();
-		auto he12 = e12->HalfEdge();
-		auto he02 = e02->HalfEdge();
-		auto he23 = e23->HalfEdge();
-		auto he30 = e30->HalfEdge();
-		auto he20 = he02->Pair();
+		auto* he01 = e01->HalfEdge();
+		auto* he12 = e12->HalfEdge();
+		auto* he02 = e02->HalfEdge();
+		auto* he23 = e23->HalfEdge();
+		auto* he30 = e30->HalfEdge();
+		auto* he20 = he02->Pair();
 
 		mesh->AddPolygon({ he01,he12,he20 }, "P0");
 		mesh->AddPolygon({ he02,he23,he30 }, "P1");
 
-		auto v4 = mesh->SplitEdge(e02, "v4");
-		auto v5 = mesh->SplitEdge(e01, "v5");
+		auto* v4 = mesh->SplitEdge(e02, "v4");
+		auto* v5 = mesh->SplitEdge(e01, "v5");
 
 		Print(mesh);
 	}
@@ -167,23 +168,23 @@ int main() {
 
 		auto mesh = make_shared<HEMesh<TraitsVEP>>();
 
-		auto v0 = mesh->AddVertex("v1");
-		auto v1 = mesh->AddVertex("v2");
-		auto v2 = mesh->AddVertex("v3");
-		auto v3 = mesh->AddVertex("v4");
+		auto* v0 = mesh->AddVertex("v1");
+		auto* v1 = mesh->AddVertex("v2");
+		auto* v2 = mesh->AddVertex("v3");
+		auto* v3 = mesh->AddVertex("v4");
 
-		auto e01 = mesh->AddEdge(v0, v1, "E0");
-		auto e12 = mesh->AddEdge(v1, v2, "E1");
-		auto e02 = mesh->AddEdge(v0, v2, "E2");
-		auto e23 = mesh->AddEdge(v2, v3, "E3");
-		auto e30 = mesh->AddEdge(v3, v0, "E4");
+		auto* e01 = mesh->AddEdge(v0, v1, "E0");
+		auto* e12 = mesh->AddEdge(v1, v2, "E1");
+		auto* e02 = mesh->AddEdge(v0, v2, "E2");
+		auto* e23 = mesh->AddEdge(v2, v3, "E3");
+		auto* e30 = mesh->AddEdge(v3, v0, "E4");
 
-		auto he01 = e01->HalfEdge();
-		auto he12 = e12->HalfEdge();
-		auto he02 = e02->HalfEdge();
-		auto he23 = e23->HalfEdge();
-		auto he30 = e30->HalfEdge();
-		auto he20 = he02->Pair();
+		auto* he01 = e01->HalfEdge();
+		auto* he12 = e12->HalfEdge();
+		auto* he02 = e02->HalfEdge();
+		auto* he23 = e23->HalfEdge();
+		auto* he30 = e30->HalfEdge();
+		auto* he20 = he02->Pair();
 
 		mesh->AddPolygon({ he01,he12,he20 }, "P0");
 		mesh->AddPolygon({ he02,he23,he30 }, "P1");
@@ -202,36 +203,36 @@ int main() {
 
 		auto mesh = make_shared<HEMesh<TraitsVEP>>();
 
-		auto v0 = mesh->AddVertex("v0");
-		auto v1 = mesh->AddVertex("v1");
-		auto v2 = mesh->AddVertex("v2");
-		auto v3 = mesh->AddVertex("v3");
+		auto* v0 = mesh->AddVertex("v0");
+		auto* v1 = mesh->AddVertex("v1");
+		auto* v2 = mesh->AddVertex("v2");
+		auto* v3 = mesh->AddVertex("v3");
 
-		auto e01 = mesh->AddEdge(v0, v1, "E0");
-		auto e12 = mesh->AddEdge(v1, v2, "E1");
-		auto e02 = mesh->AddEdge(v0, v2, "E2");
-		auto e23 = mesh->AddEdge(v2, v3, "E3");
-		auto e30 = mesh->AddEdge(v3, v0, "E4");
+		auto* e01 = mesh->AddEdge(v0, v1, "E0");
+		auto* e12 = mesh->AddEdge(v1, v2, "E1");
+		auto* e02 = mesh->AddEdge(v0, v2, "E2");
+		auto* e23 = mesh->AddEdge(v2, v3, "E3");
+		auto* e30 = mesh->AddEdge(v3, v0, "E4");
 
-		auto he01 = e01->HalfEdge();
-		auto he12 = e12->HalfEdge();
-		auto he02 = e02->HalfEdge();
-		auto he23 = e23->HalfEdge();
-		auto he30 = e30->HalfEdge();
-		auto he20 = he02->Pair();
+		auto* he01 = e01->HalfEdge();
+		auto* he12 = e12->HalfEdge();
+		auto* he02 = e02->HalfEdge();
+		auto* he23 = e23->HalfEdge();
+		auto* he30 = e30->HalfEdge();
+		auto* he20 = he02->Pair();
 
 		mesh->AddPolygon({ he01,he12,he20 }, "P0");
 		mesh->AddPolygon({ he02,he23,he30 }, "P1");
 
-		auto v4 = mesh->SplitEdge(e02);
+		auto* v4 = mesh->SplitEdge(e02);
 		v4->name = "v4";
 
-		auto v5 = mesh->SplitEdge(v4->EdgeWith(v3));
+		auto* v5 = mesh->SplitEdge(v4->EdgeWith(v3));
 		v5->name = "v5";
 
 		Print(mesh);
 
-		auto v6 = mesh->CollapseEdge(v4->EdgeWith(v5));
+		auto* v6 = mesh->CollapseEdge(v4->EdgeWith(v5));
 		v6->name = "v6";
 
 		Print(mesh);
@@ -259,8 +260,8 @@ int main() {
 		for (size_t i = 0; i <= 17; i++)
 			mesh->Vertices().at(i)->name = "v" + to_string(i);
 		Print(mesh);
-		auto e = V::EdgeBetween(mesh->Vertices().at(16), mesh->Vertices().at(17));
-		auto v = mesh->CollapseEdge(e);
+		auto* e = V::EdgeBetween(mesh->Vertices().at(16), mesh->Vertices().at(17));
+		auto* v = mesh->CollapseEdge(e);
 		v->name = "v18";
 		Print(mesh);
 	}
@@ -292,7 +293,7 @@ int main() {
 		for (size_t i = 0; i <= 9; i++)
 			mesh->Vertices().at(i)->name = "v" + to_string(i);
 		Print(mesh);
-		auto e = V::EdgeBetween(mesh->Vertices().at(6), mesh->Vertices().at(8));
+		auto* e = V::EdgeBetween(mesh->Vertices().at(6), mesh->Vertices().at(8));
 		assert(!mesh->IsCollapsable(e));
 		Print(mesh);
 	}

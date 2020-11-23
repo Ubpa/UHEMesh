@@ -6,5 +6,4 @@ Ubpa_AddTarget(
     "${PROJECT_SOURCE_DIR}/include/UHEMesh"
   LIB
     ${core}
-    Ubpa::UContainer_core
 )

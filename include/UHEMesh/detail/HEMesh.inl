@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <unordered_set>
 #include <unordered_map>
 
 namespace Ubpa {
@@ -28,7 +29,7 @@ namespace Ubpa {
 	std::vector<size_t> HEMesh<Traits>::Indices(P* p) const {
 		assert(p != nullptr);
 		std::vector<size_t> indices;
-		for (auto v : p->AdjVertices())
+		for (auto* v : p->AdjVertices())
 			indices.push_back(Index(v));
 		return indices;
 	}
@@ -38,10 +39,10 @@ namespace Ubpa {
 	HEMeshTraits_E<Traits>* HEMesh<Traits>::AddEdge(V* v0, V* v1, Args&&... args) {
 		assert(v0 != nullptr && v1 != nullptr && v0 != v1 && !V::IsConnected(v0, v1));
 
-		auto e = New<E>(std::forward<Args>(args)...);
+		auto* e = New<E>(std::forward<Args>(args)...);
 
-		auto he0 = New<H>();
-		auto he1 = New<H>();
+		auto* he0 = New<H>();
+		auto* he1 = New<H>();
 		// [init]
 		e->SetHalfEdge(he0);
 
@@ -57,10 +58,10 @@ namespace Ubpa {
 
 		// [link he0]
 		if (!v0->IsIsolated()) {
-			auto inV0 = v0->FindFreeIncident();
+			auto* inV0 = v0->FindFreeIncident();
 			if (inV0 == nullptr)
 				return nullptr;
-			auto outV0 = inV0->Next();
+			auto* outV0 = inV0->Next();
 
 			inV0->SetNext(he0);
 			he1->SetNext(outV0);
@@ -70,10 +71,10 @@ namespace Ubpa {
 
 		// [link he1]
 		if (!v1->IsIsolated()) {
-			auto inV1 = v1->FindFreeIncident();
+			auto* inV1 = v1->FindFreeIncident();
 			if (inV1 == nullptr)
 				return nullptr;
-			auto outV1 = inV1->Next();
+			auto* outV1 = inV1->Next();
 
 			inV1->SetNext(he1);
 			he0->SetNext(outV1);
@@ -100,15 +101,15 @@ namespace Ubpa {
 		// reorder link
 		for (size_t i = 0; i < heLoop.size(); i++) {
 			size_t next = (i + 1) % heLoop.size();
-			auto success = H::MakeAdjacent(heLoop[i], heLoop[next]);
+			bool success = H::MakeAdjacent(heLoop[i], heLoop[next]);
 			assert(success && "the polygon would introduce a non - monifold condition");
 		}
 
 		// link polygon and heLoop
-		auto polygon = New<P>(std::forward<Args>(args)...);
+		auto* polygon = New<P>(std::forward<Args>(args)...);
 
 		polygon->SetHalfEdge(heLoop[0]);
-		for (auto he : heLoop)
+		for (auto* he : heLoop)
 			he->SetPolygon(polygon);
 
 		return polygon;
@@ -117,7 +118,7 @@ namespace Ubpa {
 	template<typename Traits>
 	void HEMesh<Traits>::RemovePolygon(P* polygon) {
 		assert(polygon != nullptr);
-		for (auto he : polygon->AdjHalfEdges())
+		for (auto* he : polygon->AdjHalfEdges())
 			he->SetPolygon(nullptr);
 		Delete<P>(polygon);
 	}
@@ -125,8 +126,8 @@ namespace Ubpa {
 	template<typename Traits>
 	void HEMesh<Traits>::RemoveEdge(E* e) {
 		assert(e != nullptr);
-		auto he0 = e->HalfEdge();
-		auto he1 = he0->Pair();
+		auto* he0 = e->HalfEdge();
+		auto* he1 = he0->Pair();
 
 		if (!he0->IsFree())
 			RemovePolygon(he0->Polygon());
@@ -134,12 +135,12 @@ namespace Ubpa {
 			RemovePolygon(he1->Polygon());
 
 		// init
-		auto v0 = he0->Origin();
-		auto v1 = he1->Origin();
-		auto inV0 = he0->Pre();
-		auto inV1 = he1->Pre();
-		auto outV0 = he0->RotateNext();
-		auto outV1 = he1->RotateNext();
+		auto* v0 = he0->Origin();
+		auto* v1 = he1->Origin();
+		auto* inV0 = he0->Pre();
+		auto* inV1 = he1->Pre();
+		auto* outV0 = he0->RotateNext();
+		auto* outV1 = he1->RotateNext();
 
 		// [link off he0]
 		if (v0->HalfEdge() == he0)
@@ -162,7 +163,7 @@ namespace Ubpa {
 	template<typename Traits>
 	void HEMesh<Traits>::RemoveVertex(V* v) {
 		assert(v != nullptr);
-		for (auto e : v->AdjEdges())
+		for (auto* e : v->AdjEdges())
 			RemoveEdge(e);
 		Delete<V>(v);
 	}
@@ -191,19 +192,19 @@ namespace Ubpa {
 		for (size_t i = 0; i <= max; i++)
 			New<V>();
 
-		for (auto polygon : polygons) {
+		for (const auto& polygon : polygons) {
 			std::vector<H*> heLoop;
 			for (size_t i = 0; i < polygon.size(); i++) {
 				size_t next = (i + 1) % polygon.size();
 				assert(polygon[i] != polygon[next]);
-				auto u = vertices[polygon[i]];
-				auto v = vertices[polygon[next]];
-				auto he = u->HalfEdgeTo(v);
+				auto* u = vertices[polygon[i]];
+				auto* v = vertices[polygon[next]];
+				auto* he = u->HalfEdgeTo(v);
 				if (!he)
 					he = AddEdge(u, v)->HalfEdge();
 				heLoop.push_back(he);
 			}
-			auto p = AddPolygon(heLoop);
+			auto* p = AddPolygon(heLoop);
 			assert(p != nullptr);
 		}
 
@@ -215,24 +216,27 @@ namespace Ubpa {
 		assert(polygons.size() % sides == 0);
 		std::vector<std::vector<size_t>> arrangedPolygons;
 		for (size_t i = 0; i < polygons.size(); i += sides) {
-			arrangedPolygons.emplace_back();
+			std::vector<size_t> indices;
 			for (size_t j = 0; j < sides; j++)
-				arrangedPolygons.back().push_back(polygons[i + j]);
+				indices.push_back(polygons[i + j]);
+			arrangedPolygons.push_back(std::move(indices));
 		}
 		return Init(arrangedPolygons);
 	}
 
 	template<typename Traits>
 	std::vector<std::vector<size_t>> HEMesh<Traits>::Export() const {
-		std::vector<std::vector<size_t>> arrangedPolygons;
 		if (!IsValid())
-			return arrangedPolygons;
-		for (auto polygon : polygons.vec()) {
-			arrangedPolygons.emplace_back();
-			for (auto v : polygon->AdjVertices())
-				arrangedPolygons.back().push_back(Index(v));
+			return {};
+
+		std::vector<std::vector<size_t>> rst;
+		for (auto* polygon : polygons.vec()) {
+			std::vector<size_t> indices;
+			for (auto* v : polygon->AdjVertices())
+				indices.push_back(Index(v));
+			rst.push_back(std::move(indices));
 		}
-		return arrangedPolygons;
+		return rst;
 	}
 
 	template<typename Traits>
@@ -240,7 +244,7 @@ namespace Ubpa {
 		if constexpr (std::is_trivially_destructible_v<V>)
 			poolV.FastClear();
 		else {
-			for (auto v : vertices.vec())
+			for (auto* v : vertices.vec())
 				poolV.Recycle(v);
 		}
 		vertices.clear();
@@ -248,7 +252,7 @@ namespace Ubpa {
 		if constexpr (std::is_trivially_destructible_v<H>)
 			poolHE.FastClear();
 		else {
-			for (auto he : halfEdges.vec())
+			for (auto* he : halfEdges.vec())
 				poolHE.Recycle(he);
 		}
 		halfEdges.clear();
@@ -256,7 +260,7 @@ namespace Ubpa {
 		if constexpr (std::is_trivially_destructible_v<E>)
 			poolE.FastClear();
 		else {
-			for (auto e : edges.vec())
+			for (auto* e : edges.vec())
 				poolE.Recycle(e);
 		}
 		edges.clear();
@@ -264,7 +268,7 @@ namespace Ubpa {
 		if constexpr (std::is_trivially_destructible_v<P>)
 			poolP.FastClear();
 		else {
-			for (auto p : polygons.vec())
+			for (auto* p : polygons.vec())
 				poolP.Recycle(p);
 		}
 		polygons.clear();
@@ -286,36 +290,26 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	bool HEMesh<Traits>::HaveBoundary() const noexcept {
-		for (auto he : halfEdges) {
-			if (he->IsBoundary())
+	bool HEMesh<Traits>::HasBoundary() const noexcept {
+		for (auto* he : halfEdges) {
+			if (he->IsOnBoundary())
 				return true;
 		}
 		return false;
 	}
 
 	template<typename Traits>
-	bool HEMesh<Traits>::HaveIsolatedVertices() const noexcept {
-		for (auto v : vertices) {
-			if (v->IsIsolated())
-				return true;
-		}
-		return false;
-	}
-
-	template<typename Traits>
-	std::vector<std::vector<HEMeshTraits_H<Traits>*>> HEMesh<Traits>::Boundaries() {
-		std::vector<std::vector<H*>> boundaries;
-		std::set<H*> found;
-		for (auto he : halfEdges) {
-			if (he->IsBoundary() && found.find(he) == found.end()) {
-				boundaries.push_back(std::vector<H*>());
-				auto cur = he;
+	std::vector<HEMeshTraits_H<Traits>*> HEMesh<Traits>::Boundaries() const {
+		std::vector<H*> boundaries;
+		std::unordered_set<H*> found;
+		for (auto* he : halfEdges) {
+			if (he->IsOnBoundary() && found.find(he) == found.end()) {
+				auto* cur = he;
 				do {
-					boundaries.back().push_back(cur);
 					found.insert(cur);
 					cur = cur->Next();
 				} while (cur != he);
+				boundaries.push_back(he);
 			}
 		}
 		return boundaries;
@@ -323,11 +317,12 @@ namespace Ubpa {
 
 	template<typename Traits>
 	bool HEMesh<Traits>::IsValid() const {
-		for (auto he : halfEdges) {
+		for (auto* he : halfEdges) {
 			if (!he->Next() || !he->Pair() || !he->Origin() || !he->Edge())
 				return false;
 		}
-		std::set<H*> uncheckHalfEdges(halfEdges.begin(), halfEdges.end());
+
+		std::unordered_set<H*> uncheckHalfEdges(halfEdges.begin(), halfEdges.end());
 		H* headHE = nullptr;
 		H* curHE = nullptr;
 		while (!uncheckHalfEdges.empty() || headHE != nullptr) {
@@ -347,50 +342,56 @@ namespace Ubpa {
 			}
 		}
 
-		for (auto he : halfEdges) {
-			if (he->Next()->Origin() != he->End() && he->Next()->Origin() != he->Origin())
-				return false;
+		for (auto* he : halfEdges) {
 			if (he->Pair()->Pair() != he)
 				return false;
 		}
-		for (auto v : vertices) {
-			for (auto he : v->OutHalfEdges()) {
+
+		for (auto* v : vertices) {
+			for (auto* he : v->OutHalfEdges()) {
 				if (he->Origin() != v)
 					return false;
 			}
 		}
-		for (auto e : edges) {
+
+		for (auto* e : edges) {
 			if (!e->HalfEdge() || e->HalfEdge()->Edge() != e || e->HalfEdge()->Pair()->Edge() != e)
 				return false;
 		}
-		for (auto p : polygons) {
+
+		for (auto* p : polygons) {
 			if (!p->HalfEdge())
 				return false;
-			for (auto he : p->AdjHalfEdges()) {
+			for (auto* he : p->AdjHalfEdges()) {
 				if (he->Polygon() != p)
 					return false;
 			}
 		}
+
 		return true;
 	}
 
 	template<typename Traits>
 	bool HEMesh<Traits>::IsTriMesh() const {
-		for (auto poly : polygons) {
+		if (!IsValid())
+			return false;
+
+		for (auto* poly : polygons) {
 			if (poly->Degree() != 3)
 				return false;
 		}
-		return IsValid();
+
+		return true;
 	}
 
 	template<typename Traits>
 	const HEMeshTraits_P<Traits>* HEMesh<Traits>::EraseVertex(V* v) {
-		if (v->IsBoundary()) {
+		if (v->IsOnBoundary()) {
 			RemoveVertex(v);
 			return nullptr;
 		}
 
-		H* he = v->HalfEdge();
+		auto* he = v->HalfEdge();
 		while (he->Next()->End() == v) {
 			he = he->RotateNext();
 			if (he == v->HalfEdge()) {
@@ -408,27 +409,27 @@ namespace Ubpa {
 	template<typename... Args>
 	HEMeshTraits_V<Traits>* HEMesh<Traits>::AddEdgeVertex(E* e, Args&&... args) {
 		// prepare
-		auto he01 = e->HalfEdge();
-		auto he10 = he01->Pair();
+		auto* he01 = e->HalfEdge();
+		auto* he10 = he01->Pair();
 
-		auto v0 = he01->Origin();
-		auto v1 = he10->Origin();
+		auto* v0 = he01->Origin();
+		auto* v1 = he10->Origin();
 
-		auto v0d = v0->Degree();
-		auto v1d = v1->Degree();
+		auto* v0d = v0->Degree();
+		auto* v1d = v1->Degree();
 
-		auto p01 = he01->Polygon();
-		auto p10 = he10->Polygon();
+		auto* p01 = he01->Polygon();
+		auto* p10 = he10->Polygon();
 
-		auto he02 = New<H>();
-		auto he21 = New<H>();
-		auto he12 = New<H>();
-		auto he20 = New<H>();
+		auto* he02 = New<H>();
+		auto* he21 = New<H>();
+		auto* he12 = New<H>();
+		auto* he20 = New<H>();
 
-		auto e02 = New<E>();
-		auto e12 = New<E>();
+		auto* e02 = New<E>();
+		auto* e12 = New<E>();
 
-		auto v2 = New<V>(std::forward<Args>(args)...);
+		auto* v2 = New<V>(std::forward<Args>(args)...);
 
 		// basic set
 		if (v0->HalfEdge() == he01)
@@ -475,26 +476,26 @@ namespace Ubpa {
 			he20->SetNext(he02);
 		}
 		else if (v0d == 1) {
-			auto he01Next = he01->Next();
-			auto he10Pre = he10->Pre();
+			auto* he01Next = he01->Next();
+			auto* he10Pre = he10->Pre();
 
 			he21->SetNext(he01Next);
 			he20->SetNext(he02);
 			he10Pre->SetNext(he12);
 		}
 		else if (v1d == 1) {
-			auto he01Pre = he01->Pre();
-			auto he10Next = he10->Next();
+			auto* he01Pre = he01->Pre();
+			auto* he10Next = he10->Next();
 
 			he01Pre->SetNext(he02);
 			he21->SetNext(he12);
 			he20->SetNext(he10Next);
 		}
 		else {
-			auto he01Pre = he01->Pre();
-			auto he01Next = he01->Next();
-			auto he10Pre = he10->Pre();
-			auto he10Next = he10->Next();
+			auto* he01Pre = he01->Pre();
+			auto* he01Next = he01->Next();
+			auto* he10Pre = he10->Pre();
+			auto* he10Next = he10->Next();
 
 			he01Pre->SetNext(he02);
 			he10Pre->SetNext(he12);
@@ -515,26 +516,26 @@ namespace Ubpa {
 	HEMeshTraits_E<Traits>* HEMesh<Traits>::ConnectVertex(H* he0, H* he1, Args&&... args) {
 		assert(he0->Polygon() == he1->Polygon());
 
-		auto p = he0->Polygon();
+		auto* p = he0->Polygon();
 
 		assert(!P::IsBoundary(p));
 
-		auto v0 = he0->Origin();
-		auto v1 = he1->Origin();
+		auto* v0 = he0->Origin();
+		auto* v1 = he1->Origin();
 
 		assert(v0 != v1 && !V::IsConnected(v0, v1));
 
 		RemovePolygon(p);
 
-		auto he0Pre = he0->Pre();
-		auto he1Pre = he1->Pre();
+		auto* he0Pre = he0->Pre();
+		auto* he1Pre = he1->Pre();
 
-		auto he0Loop = he0->NextTo(he1);
-		auto he1Loop = he1->NextTo(he0);
+		auto* he0Loop = he0->NextTo(he1);
+		auto* he1Loop = he1->NextTo(he0);
 
-		auto e01 = New<E>(std::forward<Args>(args)...);
-		auto he01 = New<H>();
-		auto he10 = New<H>();
+		auto* e01 = New<E>(std::forward<Args>(args)...);
+		auto* he01 = New<H>();
+		auto* he10 = New<H>();
 
 		e01->SetHalfEdge(he01);
 
@@ -562,25 +563,25 @@ namespace Ubpa {
 
 	template<typename Traits>
 	bool HEMesh<Traits>::FlipEdge(E* e) {
-		assert(e != nullptr && !e->IsBoundary());
+		assert(e != nullptr && !e->IsOnBoundary());
 
 		// 1. prepare
-		auto he01 = e->HalfEdge();
-		auto he10 = he01->Pair();
-		auto he02 = he10->Next();
-		auto he13 = he01->Next();
-		auto he01Pre = he01->Pre();
-		auto he10Pre = he10->Pre();
-		auto he02Next = he02->Next();
-		auto he13Next = he13->Next();
+		auto* he01 = e->HalfEdge();
+		auto* he10 = he01->Pair();
+		auto* he02 = he10->Next();
+		auto* he13 = he01->Next();
+		auto* he01Pre = he01->Pre();
+		auto* he10Pre = he10->Pre();
+		auto* he02Next = he02->Next();
+		auto* he13Next = he13->Next();
 
-		auto p01 = he01->Polygon();
-		auto p10 = he10->Polygon();
+		auto* p01 = he01->Polygon();
+		auto* p10 = he10->Polygon();
 
-		auto v0 = he01->Origin();
-		auto v1 = he01->End();
-		auto v2 = he02->End();
-		auto v3 = he13->End();
+		auto* v0 = he01->Origin();
+		auto* v1 = he01->End();
+		auto* v2 = he02->End();
+		auto* v3 = he13->End();
 
 		// 2. change
 		if (v0->HalfEdge() == he01)
@@ -588,8 +589,8 @@ namespace Ubpa {
 		if (v1->HalfEdge() == he10)
 			v1->SetHalfEdge(he13);
 
-		auto he23 = he01;
-		auto he32 = he10;
+		auto* he23 = he01;
+		auto* he32 = he10;
 
 		he01Pre->SetNext(he02);
 
@@ -621,17 +622,17 @@ namespace Ubpa {
 	HEMeshTraits_V<Traits>* HEMesh<Traits>::SplitEdge(E* e, Args&&... args) {
 		assert(e != nullptr);
 
-		auto he01 = e->HalfEdge();
-		auto he10 = he01->Pair();
+		auto* he01 = e->HalfEdge();
+		auto* he10 = he01->Pair();
 
-		assert((!he01->IsBoundary() || !he10->IsBoundary())
+		assert((!he01->IsOnBoundary() || !he10->IsOnBoundary())
 			&& "two side of edge are boundaries");
 
-		if (he01->IsBoundary() || he10->IsBoundary()) {
-			if (he01->IsBoundary())
+		if (he01->IsOnBoundary() || he10->IsOnBoundary()) {
+			if (he01->IsOnBoundary())
 				std::swap(he01, he10);
 
-			auto p01 = he01->Polygon();
+			auto* p01 = he01->Polygon();
 
 			assert(p01->Degree() == 3);
 
@@ -646,28 +647,28 @@ namespace Ubpa {
 			*/
 
 			// prepare
-			auto he12 = he01->Next();
-			auto he20 = he12->Next();
-			auto he10Next = he10->Next();
-			auto v0 = he01->Origin();
-			auto v1 = he10->Origin();
-			auto v2 = he20->Origin();
+			auto* he12 = he01->Next();
+			auto* he20 = he12->Next();
+			auto* he10Next = he10->Next();
+			auto* v0 = he01->Origin();
+			auto* v1 = he10->Origin();
+			auto* v2 = he20->Origin();
 
 			// old to new
-			auto he03 = he01;
-			auto he13 = he10;
-			auto e03 = e;
-			auto p03 = p01;
+			auto* he03 = he01;
+			auto* he13 = he10;
+			auto* e03 = e;
+			auto* p03 = p01;
 
 			// new
-			auto v3 = New<V>(std::forward<Args>(args)...);
-			auto he30 = New<H>();
-			auto he31 = New<H>();
-			auto he32 = New<H>();
-			auto he23 = New<H>();
-			auto e32 = New<E>();
-			auto e13 = New<E>();
-			auto p31 = New<P>();
+			auto* v3 = New<V>(std::forward<Args>(args)...);
+			auto* he30 = New<H>();
+			auto* he31 = New<H>();
+			auto* he32 = New<H>();
+			auto* he23 = New<H>();
+			auto* e32 = New<E>();
+			auto* e13 = New<E>();
+			auto* p31 = New<P>();
 
 			// set
 			v3->SetHalfEdge(he31);
@@ -692,8 +693,8 @@ namespace Ubpa {
 			return v3;
 		}
 
-		auto p01 = he01->Polygon();
-		auto p10 = he10->Polygon();
+		auto* p01 = he01->Polygon();
+		auto* p10 = he10->Polygon();
 
 		assert(p01->Degree() == 3 && p10->Degree() == 3);
 
@@ -708,35 +709,35 @@ namespace Ubpa {
 		*/
 
 		// prepare
-		auto he12 = he01->Next();
-		auto he20 = he12->Next();
-		auto he03 = he10->Next();
-		auto he31 = he03->Next();
-		auto v0 = he01->Origin();
-		auto v1 = he10->Origin();
-		auto v2 = he20->Origin();
-		auto v3 = he31->Origin();
+		auto* he12 = he01->Next();
+		auto* he20 = he12->Next();
+		auto* he03 = he10->Next();
+		auto* he31 = he03->Next();
+		auto* v0 = he01->Origin();
+		auto* v1 = he10->Origin();
+		auto* v2 = he20->Origin();
+		auto* v3 = he31->Origin();
 
 		// old to new
-		auto he04 = he01;
-		auto he14 = he10;
-		auto e04 = e;
-		auto p04 = p01;
-		auto p14 = p10;
+		auto* he04 = he01;
+		auto* he14 = he10;
+		auto* e04 = e;
+		auto* p04 = p01;
+		auto* p14 = p10;
 
 		// new
-		auto v4 = New<V>(std::forward<Args>(args)...);
-		auto he40 = New<H>();
-		auto he41 = New<H>();
-		auto he42 = New<H>();
-		auto he24 = New<H>();
-		auto he43 = New<H>();
-		auto he34 = New<H>();
-		auto e42 = New<E>();
-		auto e14 = New<E>();
-		auto e43 = New<E>();
-		auto p41 = New<P>();
-		auto p40 = New<P>();
+		auto* v4 = New<V>(std::forward<Args>(args)...);
+		auto* he40 = New<H>();
+		auto* he41 = New<H>();
+		auto* he42 = New<H>();
+		auto* he24 = New<H>();
+		auto* he43 = New<H>();
+		auto* he34 = New<H>();
+		auto* e42 = New<E>();
+		auto* e14 = New<E>();
+		auto* e43 = New<E>();
+		auto* p41 = New<P>();
+		auto* p40 = New<P>();
 
 		// set
 		v4->SetHalfEdge(he41);
@@ -773,11 +774,11 @@ namespace Ubpa {
 	bool HEMesh<Traits>::IsCollapsable(E* e) const {
 		assert(e != nullptr);
 
-		auto he01 = e->HalfEdge();
-		auto he10 = he01->Pair();
+		auto* he01 = e->HalfEdge();
+		auto* he10 = he01->Pair();
 
-		auto v0 = he01->Origin();
-		auto v1 = he01->End();
+		auto* v0 = he01->Origin();
+		auto* v1 = he01->End();
 
 		size_t p01D = he01->NextLoop().size();
 		size_t p10D = he10->NextLoop().size();
@@ -798,7 +799,7 @@ namespace Ubpa {
 		if (comVs.size() > limit)
 			return false;
 
-		if (v0->IsBoundary() && v1->IsBoundary() && !e->IsBoundary())
+		if (v0->IsOnBoundary() && v1->IsOnBoundary() && !e->IsOnBoundary())
 			return false;
 
 		return true;
@@ -809,18 +810,18 @@ namespace Ubpa {
 	HEMeshTraits_V<Traits>* HEMesh<Traits>::CollapseEdge(E* e, Args&&... args) {
 		assert(IsCollapsable(e) && "use IsCollapsable before CollapseEdge");
 
-		auto he01 = e->HalfEdge();
-		auto he10 = he01->Pair();
+		auto* he01 = e->HalfEdge();
+		auto* he10 = he01->Pair();
 
-		auto v0 = he01->Origin();
-		auto v1 = he01->End();
+		auto* v0 = he01->Origin();
+		auto* v1 = he01->End();
 
-		auto p01 = he01->Polygon();
-		auto p10 = he10->Polygon();
+		auto* p01 = he01->Polygon();
+		auto* p10 = he10->Polygon();
 		size_t p01D = he01->NextLoop().size();
 		size_t p10D = he10->NextLoop().size();
 
-		if (v0->IsBoundary() && v1->IsBoundary() && !e->IsBoundary())
+		if (v0->IsOnBoundary() && v1->IsOnBoundary() && !e->IsOnBoundary())
 			return nullptr;
 
 		if (v0->Degree() == 1) {
@@ -834,28 +835,28 @@ namespace Ubpa {
 		}
 
 		// set v
-		auto v = New<V>(std::forward<Args>(args)...);
+		auto* v = New<V>(std::forward<Args>(args)...);
 		if(he01->Pre()->Pair()->Polygon() != p10)
 			v->SetHalfEdge(he01->Pre()->Pair());
 		else
 			v->SetHalfEdge(he10->Pre()->Pair());
 
-		for (auto he : v0->OutHalfEdges())
+		for (auto* he : v0->OutHalfEdges())
 			he->SetOrigin(v);
-		for (auto he : v1->OutHalfEdges())
+		for (auto* he : v1->OutHalfEdges())
 			he->SetOrigin(v);
 
 		if (p01D == 3) { // p01->Degree() == 3
-			auto he01Next = he01->Next();
-			auto he01Pre = he01->Pre();
-			auto he01NextPair = he01Next->Pair();
-			auto he01PrePair = he01Pre->Pair();
+			auto* he01Next = he01->Next();
+			auto* he01Pre = he01->Pre();
+			auto* he01NextPair = he01Next->Pair();
+			auto* he01PrePair = he01Pre->Pair();
 
-			auto v2 = he01Pre->Origin();
+			auto* v2 = he01Pre->Origin();
 			if (v2->HalfEdge() == he01Pre)
 				v2->SetHalfEdge(he01NextPair);
 
-			auto newE = New<E>();
+			auto* newE = New<E>();
 
 			he01NextPair->SetPair(he01PrePair);
 			he01NextPair->SetEdge(newE);
@@ -877,16 +878,16 @@ namespace Ubpa {
 		}
 
 		if (p10D == 3) { // p10->Degree() == 3
-			auto he10Next = he10->Next();
-			auto he10Pre = he10->Pre();
-			auto he10NextPair = he10Next->Pair();
-			auto he10PrePair = he10Pre->Pair();
+			auto* he10Next = he10->Next();
+			auto* he10Pre = he10->Pre();
+			auto* he10NextPair = he10Next->Pair();
+			auto* he10PrePair = he10Pre->Pair();
 
-			auto v2 = he10Pre->Origin();
+			auto* v2 = he10Pre->Origin();
 			if (v2->HalfEdge() == he10Pre)
 				v2->SetHalfEdge(he10NextPair);
 
-			auto newE = New<E>();
+			auto* newE = New<E>();
 
 			he10NextPair->SetPair(he10PrePair);
 			he10NextPair->SetEdge(newE);
