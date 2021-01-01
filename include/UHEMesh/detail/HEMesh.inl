@@ -415,8 +415,8 @@ namespace Ubpa {
 		auto* v0 = he01->Origin();
 		auto* v1 = he10->Origin();
 
-		auto* v0d = v0->Degree();
-		auto* v1d = v1->Degree();
+		auto v0d = v0->Degree();
+		auto v1d = v1->Degree();
 
 		auto* p01 = he01->Polygon();
 		auto* p10 = he10->Polygon();
@@ -530,8 +530,8 @@ namespace Ubpa {
 		auto* he0Pre = he0->Pre();
 		auto* he1Pre = he1->Pre();
 
-		auto* he0Loop = he0->NextTo(he1);
-		auto* he1Loop = he1->NextTo(he0);
+		auto he0Loop = he0->NextTo(he1);
+		auto he1Loop = he1->NextTo(he0);
 
 		auto* e01 = New<E>(std::forward<Args>(args)...);
 		auto* he01 = New<H>();

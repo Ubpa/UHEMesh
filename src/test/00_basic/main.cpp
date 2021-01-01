@@ -232,7 +232,10 @@ int main() {
 
 		Print(mesh);
 
-		auto* v6 = mesh->CollapseEdge(v4->EdgeWith(v5));
+		/*auto* v6 = mesh->CollapseEdge(v4->EdgeWith(v5));
+		v6->name = "v6";*/
+
+		auto* v6 = mesh->CollapseEdge(v2->EdgeWith(v3));
 		v6->name = "v6";
 
 		Print(mesh);

@@ -4,6 +4,7 @@
 
 #include "detail/random_set.h"
 #include <UContainer/Pool.h>
+#include <UContainer/Span.h>
 
 namespace Ubpa {
 	// [ example ]
