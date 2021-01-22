@@ -46,7 +46,8 @@ namespace Ubpa {
 
 	template<typename Traits>
 	HalfEdgeRotateNextView<true, Traits> TVertex<Traits>::OutHalfEdges() const {
-		return reinterpret_cast<HalfEdgeRotateNextView<true, Traits>&&>(const_cast<TVertex*>(this)->OutHalfEdges());
+		const auto rst = const_cast<TVertex*>(this)->OutHalfEdges();
+		return *reinterpret_cast<const HalfEdgeRotateNextView<true, Traits>*>(&rst);
 	}
 
 	template<typename Traits>
@@ -59,7 +60,8 @@ namespace Ubpa {
 
 	template<typename Traits>
 	VertexAdjEdgeView<true, Traits> TVertex<Traits>::AdjEdges() const {
-		return reinterpret_cast<VertexAdjEdgeView<true, Traits>&&>(const_cast<TVertex*>(this)->AdjEdges());
+		const auto rst = const_cast<TVertex*>(this)->AdjEdges();
+		return *reinterpret_cast<const VertexAdjEdgeView<true, Traits>*>(&rst);
 	}
 
 	template<typename Traits>
@@ -72,7 +74,8 @@ namespace Ubpa {
 
 	template<typename Traits>
 	VertexAdjVertexView<true, Traits> TVertex<Traits>::AdjVertices() const {
-		return reinterpret_cast<VertexAdjVertexView<true, Traits>&&>(const_cast<TVertex*>(this)->AdjVertices());
+		const auto rst = const_cast<TVertex*>(this)->AdjVertices();
+		return *reinterpret_cast<const VertexAdjVertexView<true, Traits>*>(&rst);
 	}
 
 	template<typename Traits>

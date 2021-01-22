@@ -187,24 +187,19 @@ namespace Ubpa {
 
 		std::pmr::synchronized_pool_resource rsrc;
 
-		// =============================
-
-		template<>
-		struct MemVarOf<H> {
-			static auto& set(HEMesh* mesh) { return mesh->halfEdges; }
-		};
-		template<>
-		struct MemVarOf<V> {
-			static auto& set(HEMesh* mesh) { return mesh->vertices; }
-		};
-		template<>
-		struct MemVarOf<E> {
-			static auto& set(HEMesh* mesh) { return mesh->edges; }
-		};
-		template<>
-		struct MemVarOf<P> {
-			static auto& set(HEMesh* mesh) { return mesh->polygons; }
-		};
+		template<typename T>
+		auto& GetSet() {
+			if constexpr (std::is_same_v<T, H>)
+				return halfEdges;
+			else if constexpr (std::is_same_v<T, V>)
+				return vertices;
+			else if constexpr (std::is_same_v<T, E>)
+				return edges;
+			else{
+				static_assert(std::is_same_v<T, P>);
+				return polygons;
+			}
+		}
 	};
 }
 

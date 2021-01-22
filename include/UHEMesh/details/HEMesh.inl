@@ -13,7 +13,7 @@ namespace Ubpa {
 	T* HEMesh<Traits>::New(Args&&... args) {
 		T* elem = (T*)rsrc.allocate(sizeof(T), alignof(T));
 		new (elem) T(std::forward<Args>(args)...);
-		MemVarOf<T>::set(this).insert(elem);
+		GetSet<T>().insert(elem);
 		return elem;
 	}
 
@@ -25,7 +25,7 @@ namespace Ubpa {
 		elem->Reset();
 #endif // !NDEBUG
 		rsrc.deallocate(elem, sizeof(T), alignof(T));
-		MemVarOf<T>::set(this).erase(elem);
+		GetSet<T>().erase(elem);
 	}
 
 	template<typename Traits>

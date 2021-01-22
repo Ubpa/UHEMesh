@@ -14,7 +14,7 @@ namespace Ubpa {
 
 		constexpr TLoopIteratorBase(Data data, bool is_begin) noexcept : data{ data }, is_begin{ is_begin } {}
 		constexpr TLoopIteratorBase() noexcept : data{ nullptr }, is_begin{ false } {}
-		constexpr bool operator==(const Impl& rhs) const noexcept { return data == rhs.data && is_begin == rhs.is_begin; }
+		friend constexpr bool operator==(const Impl& lhs, const Impl& rhs) noexcept { return lhs.data == rhs.data && lhs.is_begin == rhs.is_begin; }
 		value_type operator->() const noexcept { return Impl::ToValue(data); }
 		value_type operator*() const noexcept { return Impl::ToValue(data); }
 		Impl& operator++() noexcept { data = Impl::Next(data); is_begin = false; return *static_cast<Impl*>(this); }
