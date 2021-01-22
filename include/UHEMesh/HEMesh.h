@@ -2,10 +2,9 @@
 
 #include "Empty.h"
 
-#include "detail/random_set.h"
+#include "details/random_set.h"
 
 #include <memory_resource>
-#include <ranges>
 
 namespace Ubpa {
 	// [ example ]
@@ -161,7 +160,7 @@ namespace Ubpa {
 		template<typename... Args>
 		V* SplitEdge(E* e, Args&&... args);
 
-		bool IsCollapsable(E* e) const;
+		bool IsCollapsable(const E* e) const;
 
 		// call IsCollapsable(E* e) firstly
 		template<typename... Args>
@@ -181,40 +180,32 @@ namespace Ubpa {
 		void Delete(T* elem);
 
 	private:
-		random_set<H*> halfEdges;
-		random_set<V*> vertices;
-		random_set<E*> edges;
-		random_set<P*> polygons;
+		random_set<H> halfEdges;
+		random_set<V> vertices;
+		random_set<E> edges;
+		random_set<P> polygons;
 
 		std::pmr::synchronized_pool_resource rsrc;
-		std::pmr::polymorphic_allocator<H> allocatorH;
-		std::pmr::polymorphic_allocator<V> allocatorV;
-		std::pmr::polymorphic_allocator<E> allocatorE;
-		std::pmr::polymorphic_allocator<P> allocatorP;
 
 		// =============================
 
 		template<>
 		struct MemVarOf<H> {
-			static auto allocator(HEMesh* mesh) { return std::pmr::polymorphic_allocator<H>{&mesh->rsrc}; }
 			static auto& set(HEMesh* mesh) { return mesh->halfEdges; }
 		};
 		template<>
 		struct MemVarOf<V> {
-			static auto allocator(HEMesh* mesh) { return std::pmr::polymorphic_allocator<V>{&mesh->rsrc}; }
 			static auto& set(HEMesh* mesh) { return mesh->vertices; }
 		};
 		template<>
 		struct MemVarOf<E> {
-			static auto allocator(HEMesh* mesh) { return std::pmr::polymorphic_allocator<E>{&mesh->rsrc}; }
 			static auto& set(HEMesh* mesh) { return mesh->edges; }
 		};
 		template<>
 		struct MemVarOf<P> {
-			static auto allocator(HEMesh* mesh) { return std::pmr::polymorphic_allocator<P>{&mesh->rsrc}; }
 			static auto& set(HEMesh* mesh) { return mesh->polygons; }
 		};
 	};
 }
 
-#include "detail/HEMesh.inl"
+#include "details/HEMesh.inl"

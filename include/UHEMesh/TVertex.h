@@ -1,6 +1,6 @@
 #pragma once
 
-#include "detail/ForwardDecl.h"
+#include "details/ForwardDecl.h"
 
 namespace Ubpa {
 	template<typename Traits>
@@ -17,6 +17,8 @@ namespace Ubpa {
 
 		void SetHalfEdge(H* he) noexcept { halfEdge = he; }
 
+		void Reset() noexcept { halfEdge = nullptr; }
+
 		// halfedge == nullptr
 		bool IsIsolated() const noexcept { return !halfEdge; }
 
@@ -28,6 +30,12 @@ namespace Ubpa {
 
 		// outward halfedges : [he, he.RotateNext(), he.RotateNext().RotateNext(), ..., he)
 		HalfEdgeRotateNextView<true, Traits> OutHalfEdges() const;
+
+		VertexAdjVertexView<false, Traits> AdjVertices();
+		VertexAdjVertexView<true, Traits> AdjVertices() const;
+
+		VertexAdjEdgeView<false, Traits> AdjEdges();
+		VertexAdjEdgeView<true, Traits> AdjEdges() const;
 
 		// number of adjacent edges
 		std::size_t Degree() const noexcept;
@@ -68,4 +76,4 @@ namespace Ubpa {
 	};
 }
 
-#include "detail/TVertex.inl"
+#include "details/TVertex.inl"

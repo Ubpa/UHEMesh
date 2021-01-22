@@ -1,6 +1,6 @@
 #pragma once
 
-#include "detail/ForwardDecl.h"
+#include "details/ForwardDecl.h"
 
 namespace Ubpa {
 	template<typename Traits>
@@ -16,6 +16,7 @@ namespace Ubpa {
 		const H* HalfEdge() const noexcept { return const_cast<TPolygon*>(this)->HalfEdge(); }
 
 		void SetHalfEdge(H* he) noexcept { halfEdge = he; }
+		void Reset() noexcept { halfEdge = nullptr; }
 
 		// p == nullptr
 		static bool IsBoundary(const P* p) noexcept { return p == nullptr; }

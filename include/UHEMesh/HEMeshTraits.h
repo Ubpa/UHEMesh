@@ -1,4 +1,6 @@
-#pragma once 
+#pragma once
+
+#include <type_traits>
 
 namespace Ubpa {
 	template<typename Traits>
@@ -47,4 +49,16 @@ namespace Ubpa {
 
 	template<typename Traits>
 	using HEMeshTraits_Mesh = typename Traits::Mesh;
+
+	template<bool IsConst, typename Traits>
+	using HEMeshTraits_PtrH = std::conditional_t<IsConst, const HEMeshTraits_H<Traits>*, HEMeshTraits_H<Traits>*>;
+
+	template<bool IsConst, typename Traits>
+	using HEMeshTraits_PtrV = std::conditional_t<IsConst, const HEMeshTraits_V<Traits>*, HEMeshTraits_V<Traits>*>;
+
+	template<bool IsConst, typename Traits>
+	using HEMeshTraits_PtrE = std::conditional_t<IsConst, const HEMeshTraits_E<Traits>*, HEMeshTraits_E<Traits>*>;
+
+	template<bool IsConst, typename Traits>
+	using HEMeshTraits_PtrP = std::conditional_t<IsConst, const HEMeshTraits_P<Traits>*, HEMeshTraits_P<Traits>*>;
 }

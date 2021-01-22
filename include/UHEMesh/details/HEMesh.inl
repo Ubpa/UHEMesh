@@ -11,7 +11,7 @@ namespace Ubpa {
 	template<typename Traits>
 	template<typename T, typename... Args>
 	T* HEMesh<Traits>::New(Args&&... args) {
-		T* elem = MemVarOf<T>::allocator(this).allocate(1);
+		T* elem = (T*)rsrc.allocate(sizeof(T), alignof(T));
 		new (elem) T(std::forward<Args>(args)...);
 		MemVarOf<T>::set(this).insert(elem);
 		return elem;
@@ -21,7 +21,10 @@ namespace Ubpa {
 	template<typename Traits>
 	template<typename T>
 	void HEMesh<Traits>::Delete(T* elem) {
-		MemVarOf<T>::allocator(this).deallocate(elem, 1);
+#ifndef NDEBUG
+		elem->Reset();
+#endif // !NDEBUG
+		rsrc.deallocate(elem, sizeof(T), alignof(T));
 		MemVarOf<T>::set(this).erase(elem);
 	}
 
@@ -260,19 +263,19 @@ namespace Ubpa {
 	template<typename Traits>
 	void HEMesh<Traits>::Clear() noexcept {
 		for (auto* v : vertices.vec())
-			allocatorV.deallocate(v, 1);
+			rsrc.deallocate(v, sizeof(V), alignof(V));
 		vertices.clear();
 
 		for (auto* he : halfEdges.vec())
-			allocatorH.deallocate(he, 1);
+			rsrc.deallocate(he, sizeof(H), alignof(H));
 		halfEdges.clear();
 
 		for (auto* e : edges.vec())
-			allocatorE.deallocate(e, 1);
+			rsrc.deallocate(e, sizeof(E), alignof(E));
 		edges.clear();
 
 		for (auto* p : polygons.vec())
-			allocatorP.deallocate(p, 1);
+			rsrc.deallocate(p, sizeof(P), alignof(P));
 		polygons.clear();
 	}
 
@@ -766,7 +769,7 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	bool HEMesh<Traits>::IsCollapsable(E* e) const {
+	bool HEMesh<Traits>::IsCollapsable(const E* e) const {
 		assert(e != nullptr);
 
 		auto* he01 = e->HalfEdge();

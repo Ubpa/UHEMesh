@@ -1,12 +1,13 @@
 #pragma once
 
+#include "../HEMeshTraits.h"
+
 #include <vector>
 #include <set>
 #include <type_traits>
+#include <ranges>
 
 #include <cassert>
-
-#include "../HEMeshTraits.h"
 
 namespace Ubpa {
 	template<typename V, typename E, typename P, typename H> struct HEMeshTraits;
@@ -17,11 +18,11 @@ namespace Ubpa {
 	template<typename Traits> class TPolygon;
 	template<typename Traits> class HEMesh;
 
-	template<bool IsConst, typename Traits>
-	class HalfEdgeNextView;
+	template<bool IsConst, typename Traits> class HalfEdgeNextView;
+	template<bool IsConst, typename Traits> class HalfEdgeRotateNextView;
 
-	template<bool IsConst, typename Traits>
-	class HalfEdgeRotateNextView;
+	template<bool IsConst, typename Traits> class VertexAdjEdgeView;
+	template<bool IsConst, typename Traits> class VertexAdjVertexView;
 
 	template <typename E, typename P, typename H> class EmptyV;
 	template <typename V, typename P, typename H> class EmptyE;

@@ -1,6 +1,26 @@
 #pragma once
 
 namespace Ubpa {
+	template<bool IsConst, typename Traits>
+	class HalfEdgeNextView : public TLoopViewBase<HalfEdgeNextView<IsConst, Traits>, HEMeshTraits_PtrH<IsConst, Traits>, HEMeshTraits_PtrH<IsConst, Traits>> {
+		using PtrH = HEMeshTraits_PtrH<IsConst, Traits>;
+		friend TLoopViewBase<HalfEdgeNextView<IsConst, Traits>, PtrH, PtrH>;
+		static PtrH ToValue(PtrH he) { return he; }
+		static PtrH Next(PtrH he) { return he->Next(); }
+	public:
+		using TLoopViewBase<HalfEdgeNextView<IsConst, Traits>, PtrH, PtrH>::TLoopViewBase;
+	};
+
+	template<bool IsConst, typename Traits>
+	class HalfEdgeRotateNextView : public TLoopViewBase<HalfEdgeRotateNextView<IsConst, Traits>, HEMeshTraits_PtrH<IsConst, Traits>, HEMeshTraits_PtrH<IsConst, Traits>> {
+		using PtrH = HEMeshTraits_PtrH<IsConst, Traits>;
+		friend TLoopViewBase<HalfEdgeRotateNextView<IsConst, Traits>, PtrH, PtrH>;
+		static PtrH ToValue(PtrH he) { return he; }
+		static PtrH Next(PtrH he) { return he->RotateNext(); }
+	public:
+		using TLoopViewBase<HalfEdgeRotateNextView<IsConst, Traits>, PtrH, PtrH>::TLoopViewBase;
+	};
+
 	template<typename Traits>
 	HEMeshTraits_H<Traits>* THalfEdge<Traits>::Pre() noexcept {
 		auto* he = this;
@@ -20,6 +40,15 @@ namespace Ubpa {
 		origin = v;
 		edge = e;
 		polygon = p;
+	}
+
+	template<typename Traits>
+	void THalfEdge<Traits>::Reset() noexcept {
+		next = nullptr;
+		pair = nullptr;
+		origin = nullptr;
+		edge = nullptr;
+		polygon = nullptr;
 	}
 
 	template<typename Traits>
