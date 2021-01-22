@@ -17,6 +17,12 @@ namespace Ubpa {
 	template<typename Traits> class TPolygon;
 	template<typename Traits> class HEMesh;
 
+	template<bool IsConst, typename Traits>
+	class HalfEdgeNextView;
+
+	template<bool IsConst, typename Traits>
+	class HalfEdgeRotateNextView;
+
 	template <typename E, typename P, typename H> class EmptyV;
 	template <typename V, typename P, typename H> class EmptyE;
 	template <typename V, typename E, typename H> class EmptyP;

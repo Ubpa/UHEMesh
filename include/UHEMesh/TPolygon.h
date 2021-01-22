@@ -21,21 +21,13 @@ namespace Ubpa {
 		static bool IsBoundary(const P* p) noexcept { return p == nullptr; }
 
 		// number of edges/vertices
-		size_t Degree() const noexcept;
+		std::size_t Degree() const noexcept { assert(HalfEdge()); return HalfEdge()->PolygonDegree(); }
 
 		// halfedges : [ he, he.Next(), he.Next().Next(), ..., he)
-		std::vector<H*> AdjHalfEdges() { return HalfEdge()->NextLoop(); }
+		HalfEdgeNextView<false, Traits> AdjHalfEdges() { return HalfEdge()->NextLoop(); }
 
-		// edges : { halfedge.Edge() for halfedge in AdjHalfEdges() }
-		std::vector<E*> AdjEdges();
-
-		// vertices : { halfedge.Origin() for halfedge in AdjHalfEdges() }
-		std::vector<V*> AdjVertices();
-
-		// adjacent polygons : { halfedge.Pair().Polygon() for halfedge in AdjHalfEdges() }
-		// maybe contains boundary polygon (nullptr)
-		// use IsBoundary() to find it
-		std::vector<P*> AdjPolygons();
+		// halfedges : [ he, he.Next(), he.Next().Next(), ..., he)
+		HalfEdgeNextView<true, Traits> AdjHalfEdges() const { return HalfEdge()->NextLoop(); }
 
 	private:
 		friend HEMesh<Traits>;
@@ -44,5 +36,3 @@ namespace Ubpa {
 	};
 
 }
-
-#include "detail/TPolygon.inl"

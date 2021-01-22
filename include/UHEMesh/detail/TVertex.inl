@@ -6,55 +6,33 @@ namespace Ubpa {
 		if (IsIsolated())
 			return true;
 
-		auto* begin = HalfEdge();
-		auto* he = begin;
-		do {
+		for (auto* he : HalfEdge()->NextLoop()) {
 			if (he->IsOnBoundary())
 				return true;
-			he = he->RotateNext();
-		} while (he != begin);
+		}
 
 		return false;
 	}
 
 	template<typename Traits>
-	size_t TVertex<Traits>::Degree() const noexcept {
+	HalfEdgeRotateNextView<false, Traits> TVertex<Traits>::OutHalfEdges() {
 		if (IsIsolated())
-			return 0;
+			return {};
 
-		auto* begin = HalfEdge();
-		auto* he = begin;
-		size_t degree = 0;
-		do {
-			++degree;
-			he = he->RotateNext();
-		} while (he != begin);
-
-		return degree;
+		return { HalfEdge(), HalfEdge() };
 	}
 
 	template<typename Traits>
-	std::vector<HEMeshTraits_E<Traits>*> TVertex<Traits>::AdjEdges() {
-		std::vector<E*> edges;
-		for (auto* he : OutHalfEdges())
-			edges.push_back(he->Edge());
-		return edges;
+	HalfEdgeRotateNextView<true, Traits> TVertex<Traits>::OutHalfEdges() const {
+		return reinterpret_cast<HalfEdgeRotateNextView<true, Traits>&&>(const_cast<TVertex*>(this)->OutHalfEdges());
 	}
 
 	template<typename Traits>
-	std::vector<HEMeshTraits_V<Traits>*> TVertex<Traits>::AdjVertices() {
-		std::vector<V*> adjVs;
+	std::size_t TVertex<Traits>::Degree() const noexcept {
+		std::size_t cnt = 0;
 		for (auto* he : OutHalfEdges())
-			adjVs.push_back(he->End());
-		return adjVs;
-	}
-
-	template<typename Traits>
-	std::set<HEMeshTraits_P<Traits>*> TVertex<Traits>::AdjPolygons() {
-		std::set<P*> adjPs;
-		for (auto* he : OutHalfEdges())
-			adjPs.insert(he->Polygon());
-		return adjPs;
+			++cnt;
+		return cnt;
 	}
 
 	template<typename Traits>

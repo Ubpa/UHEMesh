@@ -1,6 +1,7 @@
 #include <UHEMesh/HEMesh.h>
 #include <iostream>
 #include <string>
+#include <array>
 
 using namespace Ubpa;
 using namespace std;
@@ -105,10 +106,10 @@ int main() {
 	auto* e45 = mesh->AddEdge(v4, v5, "E45");
 	auto* e53 = mesh->AddEdge(v5, v3, "E53");
 
-	mesh->AddPolygon({ e34->HalfEdge(), e45->HalfEdge(), e53->HalfEdge() }, "P345");
-	mesh->AddPolygon({ v4->HalfEdgeTo(v3), v3->HalfEdgeTo(v1), v1->HalfEdgeTo(v4) }, "P431");
-	mesh->AddPolygon({ v5->HalfEdgeTo(v4), v4->HalfEdgeTo(v2), v2->HalfEdgeTo(v5) }, "P542");
-	mesh->AddPolygon({ v3->HalfEdgeTo(v5), v5->HalfEdgeTo(v0), v0->HalfEdgeTo(v3) }, "P350");
+	mesh->AddPolygon(std::array{ e34->HalfEdge(), e45->HalfEdge(), e53->HalfEdge() }, "P345");
+	mesh->AddPolygon(std::array{ v4->HalfEdgeTo(v3), v3->HalfEdgeTo(v1), v1->HalfEdgeTo(v4) }, "P431");
+	mesh->AddPolygon(std::array{ v5->HalfEdgeTo(v4), v4->HalfEdgeTo(v2), v2->HalfEdgeTo(v5) }, "P542");
+	mesh->AddPolygon(std::array{ v3->HalfEdgeTo(v5), v5->HalfEdgeTo(v0), v0->HalfEdgeTo(v3) }, "P350");
 	Print(mesh);
 
 	return 0;

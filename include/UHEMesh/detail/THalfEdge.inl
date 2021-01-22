@@ -57,24 +57,10 @@ namespace Ubpa {
 	}
 
 	template<typename Traits>
-	std::vector<HEMeshTraits_H<Traits>*> THalfEdge<Traits>::NextBetween(H* begin, H* end) {
-		std::vector<H*> hes;
-		auto* he = begin;
-		do {
-			hes.push_back(he);
-			he = he->Next();
-		} while (he != end);
-		return hes;
-	}
-
-	template<typename Traits>
-	std::vector<HEMeshTraits_H<Traits>*> THalfEdge<Traits>::RotateNextBetween(H* begin, H* end) {
-		std::vector<H*> hes;
-		auto* he = begin;
-		do {
-			hes.push_back(he);
-			he = he->RotateNext();
-		} while (he != end);
-		return hes;
+	std::size_t THalfEdge<Traits>::PolygonDegree() const noexcept {
+		std::size_t cnt = 0;
+		for (const auto& he : NextLoop())
+			++cnt;
+		return cnt;
 	}
 }

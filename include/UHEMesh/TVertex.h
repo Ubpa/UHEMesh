@@ -23,23 +23,14 @@ namespace Ubpa {
 		// vertex is on boundary == any adjacent polygon is boundary (nullptr)
 		bool IsOnBoundary() const noexcept;
 
-		// number of adjacent edges
-		size_t Degree() const noexcept;
+		// outward halfedges : [he, he.RotateNext(), he.RotateNext().RotateNext(), ..., he)
+		HalfEdgeRotateNextView<false, Traits> OutHalfEdges();
 
 		// outward halfedges : [he, he.RotateNext(), he.RotateNext().RotateNext(), ..., he)
-		std::vector<H*> OutHalfEdges() { return IsIsolated() ? std::vector<H*>() : HalfEdge()->RotateNextLoop(); }
+		HalfEdgeRotateNextView<true, Traits> OutHalfEdges() const;
 
-		// adjacent edges : { halfedge.Edge() for halfedge in OutHalfEdges() }
-		std::vector<E*> AdjEdges();
-
-		// adjacent vertices : { halfedge.End() for halfedge in OutHalfEdges() }
-		std::vector<V*> AdjVertices();
-
-		// adjacent polygons : { halfedge.End() for halfedge in OutHalfEdges() }
-		// [WARNING]
-		// if IsOnBoundary(), result contains nullptr
-		// use P::IsBoundary() to find it
-		std::set<P*> AdjPolygons();
+		// number of adjacent edges
+		std::size_t Degree() const noexcept;
 
 		// find halfedge (this -> end)
 		// nullptr if no exist

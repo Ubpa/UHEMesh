@@ -1,6 +1,7 @@
 #include <UHEMesh/HEMesh.h>
 #include <iostream>
 #include <string>
+#include <array>
 
 using namespace Ubpa;
 using namespace std;
@@ -105,8 +106,11 @@ int main() {
 		Print(mesh);
 
 		cout << "add p0" << endl;
-		auto* p0 = mesh->AddPolygon({ e01->HalfEdge(),e12->HalfEdge(),e20->HalfEdge() }, "P0");
+		auto* p0 = mesh->AddPolygon(std::array{ e01->HalfEdge(),e12->HalfEdge(),e20->HalfEdge() }, "P0");
 		Print(mesh);
+
+		for (auto* he : e01->HalfEdge()->NextLoop())
+			std::cout << he << std::endl;
 
 		cout << e01->Name() << " is " << (e01->IsOnBoundary() ? "" : "not ") << "a boundary" << endl;
 		cout << v0->name << " is " << (v0->IsOnBoundary() ? "" : "not ") << "a boundary" << endl;
@@ -150,8 +154,8 @@ int main() {
 		auto* he30 = e30->HalfEdge();
 		auto* he20 = he02->Pair();
 
-		mesh->AddPolygon({ he01,he12,he20 }, "P0");
-		mesh->AddPolygon({ he02,he23,he30 }, "P1");
+		mesh->AddPolygon(std::array{ he01,he12,he20 }, "P0");
+		mesh->AddPolygon(std::array{ he02,he23,he30 }, "P1");
 
 		auto* v4 = mesh->SplitEdge(e02, "v4");
 		auto* v5 = mesh->SplitEdge(e01, "v5");
@@ -186,8 +190,8 @@ int main() {
 		auto* he30 = e30->HalfEdge();
 		auto* he20 = he02->Pair();
 
-		mesh->AddPolygon({ he01,he12,he20 }, "P0");
-		mesh->AddPolygon({ he02,he23,he30 }, "P1");
+		mesh->AddPolygon(std::array{ he01,he12,he20 }, "P0");
+		mesh->AddPolygon(std::array{ he02,he23,he30 }, "P1");
 
 		Print(mesh);
 		mesh->FlipEdge(e02);
@@ -221,8 +225,8 @@ int main() {
 		auto* he30 = e30->HalfEdge();
 		auto* he20 = he02->Pair();
 
-		mesh->AddPolygon({ he01,he12,he20 }, "P0");
-		mesh->AddPolygon({ he02,he23,he30 }, "P1");
+		mesh->AddPolygon(std::array{ he01,he12,he20 }, "P0");
+		mesh->AddPolygon(std::array{ he02,he23,he30 }, "P1");
 
 		auto* v4 = mesh->SplitEdge(e02);
 		v4->name = "v4";
